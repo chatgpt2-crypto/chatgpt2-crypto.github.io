@@ -1,224 +1,160 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>لوحة تحكم منصة أشير - Super Admin</title>
-  <style>
-    :root{--bg:#f5f7fa;--card:#fff;--text:#0b1a2e;--muted:#6b7280;--brand:#ff6b00;--line:#e5e7eb;--danger:#d90429;--ok:#0a7a2f}
-    *{box-sizing:border-box}
-    body{font-family:Arial,system-ui; background:var(--bg); margin:0; padding:22px; color:var(--text)}
-    .wrap{max-width:1100px; margin:auto}
-    .top{background:#fff; border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 10px 25px rgba(0,0,0,.06)}
-    h1{margin:0 0 8px; font-size:22px}
-    .meta{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px}
-    .pill{padding:7px 12px; background:#0b1a2e; color:#fff; border-radius:999px; font-weight:700; font-size:12px}
-    .btn{border:0; padding:10px 14px; border-radius:12px; cursor:pointer; font-weight:700}
-    .btn.brand{background:var(--brand); color:#fff}
-    .btn.dark{background:#0b1a2e; color:#fff}
-    .btn.ghost{background:#fff; border:1px solid var(--line); color:#0b1a2e}
-    .grid{display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px}
-    @media(min-width:920px){.grid{grid-template-columns:.8fr 1.2fr}}
-    .card{background:var(--card); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow:0 10px 25px rgba(0,0,0,.06)}
-    input{width:100%; padding:12px; border:1px solid var(--line); border-radius:12px; outline:none; font-size:15px}
-    .hint{font-size:13px; color:var(--muted); margin-top:8px}
-    .ok{color:var(--ok); font-weight:700}
-    .err{color:#b00020; font-weight:700}
-    table{width:100%; border-collapse:collapse; overflow:hidden; border-radius:14px; border:1px solid var(--line)}
-    th,td{padding:10px; border-bottom:1px solid var(--line); text-align:center; font-size:14px}
-    th{background:#0b1a2e; color:#fff; position:sticky; top:0}
-    .del{background:var(--danger); color:#fff; border:0; padding:8px 10px; border-radius:10px; cursor:pointer; font-weight:700}
-    .tag{display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid var(--line); background:#fff; font-weight:700; font-size:12px}
-    .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between}
-  </style>
+<meta charset="UTF-8">
+<title>Super Admin - أشير</title>
+
+<style>
+body{
+font-family:Arial;
+background:#0b1a2e;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+.box{
+background:white;
+color:black;
+padding:20px;
+border-radius:10px;
+max-width:900px;
+margin:auto;
+}
+
+input{
+padding:10px;
+width:200px;
+}
+
+button{
+padding:10px;
+background:#ff6b00;
+color:white;
+border:none;
+margin:5px;
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+}
+
+td,th{
+border:1px solid #ddd;
+padding:10px;
+}
+
+th{
+background:#0b1a2e;
+color:white;
+}
+</style>
+
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
-      <div class="meta">
-        <div>
-          <h1>لوحة تحكم منصة أشير — Super Admin</h1>
-          <div class="hint" id="apiText">Backend: ...</div>
-        </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap">
-          <button class="btn ghost" onclick="goOrders()">صفحة الطلب</button>
-          <button class="btn brand" onclick="loadOrders()">تحديث</button>
-          <button class="btn dark" onclick="logout()">خروج</button>
-        </div>
-      </div>
-    </div>
 
-    <div class="grid">
-      <div class="card" id="loginCard">
-        <h2 style="margin:0 0 10px">تسجيل دخول</h2>
-        <div class="hint">أدخل كلمة السر للوصول للطلبات.</div>
-        <input id="pass" type="password" placeholder="كلمة السر"/>
-        <button class="btn brand" style="margin-top:12px; width:100%" onclick="login()">دخول</button>
-        <div class="hint" id="loginMsg"></div>
-      </div>
+<h1>لوحة تحكم Super Admin</h1>
 
-      <div class="card" id="dataCard" style="display:none">
-        <div class="row">
-          <div>
-            <div class="tag" id="countTag">عدد الطلبات: 0</div>
-          </div>
-          <input id="q" placeholder="بحث بالاسم/الهاتف/المدينة/النوع..." oninput="render()"/>
-        </div>
+<div id="login">
 
-        <div class="hint" id="status">...</div>
+<input type="password" id="pass" placeholder="كلمة السر">
+<button onclick="login()">دخول</button>
 
-        <div style="margin-top:10px; overflow:auto; max-height:520px">
-          <table>
-            <thead>
-              <tr>
-                <th>الاسم</th>
-                <th>الهاتف</th>
-                <th>المدينة</th>
-                <th>نوع الطلب</th>
-                <th>ملاحظة</th>
-                <th>التاريخ</th>
-                <th>حذف</th>
-              </tr>
-            </thead>
-            <tbody id="rows"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+<p id="msg"></p>
+
+</div>
+
+<div id="panel" style="display:none">
+
+<div class="box">
+
+<button onclick="load()">تحديث</button>
+
+<table>
+
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>المدينة</th>
+<th>حذف</th>
+</tr>
+</thead>
+
+<tbody id="orders"></tbody>
+
+</table>
+
+</div>
+
+</div>
 
 <script>
-  // لازم يكون نفس رابط Render
-  const API_BASE = "https://achir-backend.onrender.com";
-  document.getElementById("apiText").textContent = "Backend: " + API_BASE;
 
-  let TOKEN = localStorage.getItem("ACHIR_TOKEN") || "";
-  let ORDERS = [];
+const PASSWORD="superadmin";
 
-  function goOrders(){ location.href = "./index.html"; }
-  function logout(){
-    localStorage.removeItem("ACHIR_TOKEN");
-    TOKEN = "";
-    ORDERS = [];
-    document.getElementById("dataCard").style.display="none";
-    document.getElementById("loginCard").style.display="block";
-  }
+const API="https://achir-backend-1.onrender.com/api/orders";
 
-  async function login(){
-    const pass = document.getElementById("pass").value;
-    const msg = document.getElementById("loginMsg");
-    msg.textContent = "";
+function login(){
 
-    try{
-      const r = await fetch(API_BASE + "/api/auth/login",{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ password: pass })
-      });
+let p=document.getElementById("pass").value;
 
-      const data = await r.json().catch(()=>({}));
-      if(!r.ok){
-        msg.innerHTML = '<span class="err">❌ كلمة سر خاطئة</span>';
-        return;
-      }
+if(p===PASSWORD){
 
-      TOKEN = data.token;
-      localStorage.setItem("ACHIR_TOKEN", TOKEN);
-      msg.innerHTML = '<span class="ok">✅ تم الدخول</span>';
+document.getElementById("login").style.display="none";
+document.getElementById("panel").style.display="block";
 
-      document.getElementById("loginCard").style.display="none";
-      document.getElementById("dataCard").style.display="block";
-      loadOrders();
+load();
 
-    }catch(e){
-      msg.innerHTML = '<span class="err">❌ فشل الاتصال بالـ Backend</span>';
-    }
-  }
+}else{
 
-  async function loadOrders(){
-    const status = document.getElementById("status");
-    status.innerHTML = "جاري التحميل...";
-    try{
-      const r = await fetch(API_BASE + "/api/orders",{
-        headers:{ "Authorization":"Bearer " + TOKEN }
-      });
+document.getElementById("msg").innerHTML="كلمة سر خاطئة";
 
-      const data = await r.json().catch(()=>({}));
-      if(!r.ok){
-        // لو التوكن ناقص أو غلط
-        if(data.error === "missing_token" || data.error === "invalid_token"){
-          status.innerHTML = '<span class="err">❌ لازم تسجل دخول (Token)</span>';
-          logout();
-          return;
-        }
-        status.innerHTML = '<span class="err">❌ خطأ: ' + (data.error || r.status) + '</span>';
-        return;
-      }
+}
 
-      ORDERS = data;
-      status.innerHTML = '<span class="ok">✅ تم التحميل</span>';
-      document.getElementById("countTag").textContent = "عدد الطلبات: " + ORDERS.length;
-      render();
+}
 
-    }catch(e){
-      status.innerHTML = '<span class="err">❌ فشل الاتصال</span>';
-    }
-  }
+function load(){
 
-  function render(){
-    const q = (document.getElementById("q").value || "").toLowerCase();
-    const rows = document.getElementById("rows");
+fetch(API)
+.then(r=>r.json())
+.then(data=>{
 
-    const filtered = ORDERS.filter(o=>{
-      const s = (o.name+" "+o.phone+" "+o.city+" "+(o.type||"")+" "+(o.note||"")).toLowerCase();
-      return s.includes(q);
-    });
+let html="";
 
-    rows.innerHTML = filtered.map(o=>`
-      <tr>
-        <td>${escapeHtml(o.name||"")}</td>
-        <td>${escapeHtml(o.phone||"")}</td>
-        <td>${escapeHtml(o.city||"")}</td>
-        <td>${escapeHtml(o.type||"")}</td>
-        <td style="max-width:240px">${escapeHtml(o.note||"")}</td>
-        <td>${escapeHtml(new Date(o.createdAt||Date.now()).toLocaleString())}</td>
-        <td><button class="del" onclick="delOrder('${o.id}')">حذف</button></td>
-      </tr>
-    `).join("") || `<tr><td colspan="7">لا توجد طلبات</td></tr>`;
-  }
+data.forEach(o=>{
 
-  async function delOrder(id){
-    if(!confirm("هل تريد حذف الطلب؟")) return;
-    try{
-      const r = await fetch(API_BASE + "/api/orders/" + id,{
-        method:"DELETE",
-        headers:{ "Authorization":"Bearer " + TOKEN }
-      });
-      const data = await r.json().catch(()=>({}));
-      if(!r.ok){
-        alert("فشل الحذف: " + (data.error || r.status));
-        return;
-      }
-      ORDERS = ORDERS.filter(o=>o.id!==id);
-      document.getElementById("countTag").textContent = "عدد الطلبات: " + ORDERS.length;
-      render();
-    }catch(e){
-      alert("فشل الاتصال");
-    }
-  }
+html+=`
+<tr>
+<td>${o.name}</td>
+<td>${o.phone}</td>
+<td>${o.city}</td>
+<td>
+<button onclick="del('${o.id}')">حذف</button>
+</td>
+</tr>
+`;
 
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, (m)=>({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
+});
 
-  // لو كان عندك توكن محفوظ، افتح مباشرة
-  if(TOKEN){
-    document.getElementById("loginCard").style.display="none";
-    document.getElementById("dataCard").style.display="block";
-    loadOrders();
-  }
+document.getElementById("orders").innerHTML=html;
+
+});
+
+}
+
+function del(id){
+
+fetch(API+"/"+id,{
+method:"DELETE"
+})
+.then(()=>load());
+
+}
+
 </script>
+
 </body>
 </html>
