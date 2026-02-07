@@ -7,15 +7,15 @@
 
 <style>
 body{
-font-family:Tahoma;
-background:#f4f6f9;
+font-family:Tajawal;
+background:#f1f5f9;
 margin:0;
 }
 
 .header{
-background:#111827;
+background:#0f172a;
 color:white;
-padding:15px;
+padding:20px;
 text-align:center;
 font-size:22px;
 }
@@ -28,28 +28,36 @@ padding:20px;
 background:white;
 padding:15px;
 border-radius:10px;
+margin-bottom:15px;
 box-shadow:0 0 10px rgba(0,0,0,0.1);
-margin-bottom:20px;
-}
-
-button{
-background:#ff7a00;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:6px;
-cursor:pointer;
-margin:5px;
-}
-
-button:hover{
-background:#e56b00;
 }
 
 input{
-padding:8px;
 width:100%;
+padding:10px;
 margin-bottom:10px;
+}
+
+button{
+padding:10px 15px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.update{
+background:#f97316;
+color:white;
+}
+
+.export{
+background:#16a34a;
+color:white;
+}
+
+.delete{
+background:red;
+color:white;
 }
 
 table{
@@ -57,23 +65,15 @@ width:100%;
 border-collapse:collapse;
 }
 
-th,td{
+th{
+background:#0f172a;
+color:white;
+padding:10px;
+}
+
+td{
 padding:10px;
 border-bottom:1px solid #ddd;
-text-align:right;
-}
-
-th{
-background:#111827;
-color:white;
-}
-
-.delete{
-background:red;
-}
-
-.export{
-background:green;
 }
 
 </style>
@@ -89,31 +89,28 @@ background:green;
 
 <div class="card">
 
-<input type="text" id="search" placeholder="بحث...">
+<input id="search" placeholder="بحث...">
 
-<button onclick="loadOrders()">تحديث</button>
+<button class="update" onclick="load()">تحديث</button>
 
-<button class="export" onclick="exportExcel()">تصدير Excel</button>
+<button class="export" onclick="exportExcel()">Excel تصدير</button>
 
 </div>
 
 <div class="card">
 
-<table id="table">
+<table>
 
 <thead>
 <tr>
 <th>الاسم</th>
 <th>الهاتف</th>
 <th>المدينة</th>
-<th>التاريخ</th>
 <th>حذف</th>
 </tr>
 </thead>
 
-<tbody id="tbody">
-
-</tbody>
+<tbody id="data"></tbody>
 
 </table>
 
@@ -123,70 +120,53 @@ background:green;
 
 <script>
 
-let orders = [];
+function load(){
 
-async function loadOrders(){
-
-try{
-
-let res = await fetch("https://achir-backend.onrender.com/orders");
-
-orders = await res.json();
-
-showOrders();
-
-}catch{
-
-alert("فشل الاتصال بالخادم");
-
-}
-
-}
-
-function showOrders(){
-
-let tbody = document.getElementById("tbody");
-
-tbody.innerHTML="";
+let orders = JSON.parse(localStorage.getItem("orders")||"[]");
 
 let search = document.getElementById("search").value;
 
-orders
-.filter(o => !search || o.name.includes(search) || o.phone.includes(search))
-.forEach(o => {
+let html="";
 
-tbody.innerHTML += `
+orders
+.filter(o=>!search || o.name.includes(search))
+.forEach((o,i)=>{
+
+html+=`
 <tr>
 <td>${o.name}</td>
 <td>${o.phone}</td>
 <td>${o.city}</td>
-<td>${o.date}</td>
-<td><button class="delete" onclick="deleteOrder('${o._id}')">حذف</button></td>
+<td><button class="delete" onclick="del(${i})">حذف</button></td>
 </tr>
 `;
 
 });
 
+document.getElementById("data").innerHTML=html;
+
 }
 
-async function deleteOrder(id){
+function del(i){
 
-if(!confirm("حذف الطلب؟")) return;
+let orders = JSON.parse(localStorage.getItem("orders")||"[]");
 
-await fetch("https://achir-backend.onrender.com/orders/"+id,{
-method:"DELETE"
-});
+orders.splice(i,1);
 
-loadOrders();
+localStorage.setItem("orders",JSON.stringify(orders));
+
+load();
 
 }
 
 function exportExcel(){
 
-let csv="الاسم,الهاتف,المدينة,التاريخ\n";
+let orders = JSON.parse(localStorage.getItem("orders")||"[]");
+
+let csv="الاسم,الهاتف,المدينة\n";
 
 orders.forEach(o=>{
-csv+=`${o.name},${o.phone},${o.city},${o.date}\n`;
+csv+=`${o.name},${o.phone},${o.city}\n`;
 });
 
 let blob=new Blob([csv]);
@@ -201,11 +181,9 @@ a.click();
 
 }
 
-document.getElementById("search").oninput=showOrders;
-
-loadOrders();
+load();
 
 </script>
 
 </body>
-  </html>
+</html>
