@@ -2,33 +2,175 @@
 <html dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>Admin Test</title>
+<title>Super Admin - منصة أشير</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f9;
+margin:0;
+padding:20px;
+}
+
+.login{
+max-width:400px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+.panel{
+display:none;
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+padding:10px;
+background:#ff6b00;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th{
+background:#0f172a;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+.delete{
+background:red;
+}
+
+</style>
+
 </head>
 <body>
 
-<h2>تسجيل دخول</h2>
+<div class="login" id="loginBox">
 
-<input type="password" id="pass">
+<h2>Super Admin</h2>
+
+<input type="password" id="pass" placeholder="كلمة السر">
 
 <button onclick="login()">دخول</button>
 
 <p id="msg"></p>
 
+</div>
+
+
+<div class="panel" id="panel">
+
+<h2>لوحة التحكم</h2>
+
+<button onclick="loadOrders()">تحديث</button>
+
+<table>
+
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>المدينة</th>
+<th>ملاحظة</th>
+<th>حذف</th>
+</tr>
+</thead>
+
+<tbody id="orders"></tbody>
+
+</table>
+
+</div>
+
+
 <script>
+
+const API="https://achir-backend-1.onrender.com";
+
 
 function login(){
 
-let p = document.getElementById("pass").value;
+let p=document.getElementById("pass").value;
 
-if(p === "admin47"){
+if(p==="admin47"){
 
-document.getElementById("msg").innerHTML = "✅ تم الدخول";
+document.getElementById("loginBox").style.display="none";
+document.getElementById("panel").style.display="block";
+
+loadOrders();
 
 }else{
 
-document.getElementById("msg").innerHTML = "❌ كلمة السر خاطئة";
+document.getElementById("msg").innerHTML="❌ كلمة سر خاطئة";
 
 }
+
+}
+
+
+function loadOrders(){
+
+fetch(API+"/api/orders")
+.then(r=>r.json())
+.then(data=>{
+
+let html="";
+
+data.forEach(o=>{
+
+html+=`
+<tr>
+<td>${o.name}</td>
+<td>${o.phone}</td>
+<td>${o.city}</td>
+<td>${o.note}</td>
+<td>
+<button class="delete"
+onclick="deleteOrder('${o._id}')">
+حذف
+</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("orders").innerHTML=html;
+
+});
+
+}
+
+
+function deleteOrder(id){
+
+fetch(API+"/api/orders/"+id,{
+method:"DELETE"
+})
+.then(()=>loadOrders());
 
 }
 
