@@ -3,53 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة تحكم Super Admin - أشير</title>
+
+<title>لوحة تحكم أشير - Super Admin</title>
 
 <style>
+
 body{
-font-family:Arial;
-background:#0b1f3a;
-color:#fff;
+font-family: Arial;
+background:#0b2340;
+margin:0;
+padding:0;
+color:white;
 text-align:center;
 }
 
 .container{
-background:#fff;
-color:#000;
-margin:20px;
+background:white;
+color:black;
+margin:40px auto;
 padding:20px;
+width:90%;
+max-width:600px;
 border-radius:10px;
+}
+
+h1{
+margin-top:20px;
 }
 
 button{
 background:#ff7a00;
-color:#fff;
+color:white;
 border:none;
-padding:8px 12px;
+padding:10px 20px;
+margin:10px;
+border-radius:6px;
 cursor:pointer;
+font-size:16px;
+}
+
+button.delete{
+background:red;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
+margin-top:20px;
 }
 
 th{
-background:#0b1f3a;
-color:#fff;
+background:#0b2340;
+color:white;
 padding:10px;
 }
 
 td{
 padding:10px;
-border-bottom:1px solid #ccc;
+border-bottom:1px solid #ddd;
 }
-</style>
 
+</style>
 </head>
 <body>
 
-<h2>Super Admin لوحة تحكم</h2>
+<h1>Super Admin لوحة تحكم</h1>
 
 <div class="container">
 
@@ -73,20 +91,18 @@ border-bottom:1px solid #ccc;
 
 </div>
 
+
 <script>
 
 const API="https://achir-backend-1.onrender.com/api/orders";
 
-const TOKEN="achir_super_admin_2026";
 
 function loadOrders(){
 
-fetch(API,{
-headers:{
-"Authorization":"Bearer "+TOKEN
-}
-})
-.then(r=>r.json())
+fetch(API)
+
+.then(res=>res.json())
+
 .then(data=>{
 
 let html="";
@@ -95,11 +111,13 @@ data.forEach(o=>{
 
 html+=`
 <tr>
-<td>${o.name}</td>
-<td>${o.phone}</td>
-<td>${o.city}</td>
+<td>${o.name || ""}</td>
+<td>${o.phone || ""}</td>
+<td>${o.city || ""}</td>
 <td>
-<button onclick="deleteOrder('${o.id}')">حذف</button>
+<button class="delete" onclick="deleteOrder('${o.id}')">
+حذف
+</button>
 </td>
 </tr>
 `;
@@ -108,25 +126,34 @@ html+=`
 
 document.getElementById("orders").innerHTML=html;
 
+})
+
+.catch(err=>{
+
+alert("فشل الاتصال بالBackend");
+
+console.log(err);
+
 });
 
 }
 
+
+
 function deleteOrder(id){
 
 fetch(API+"/"+id,{
-method:"DELETE",
-headers:{
-"Authorization":"Bearer "+TOKEN
-}
+method:"DELETE"
 })
 .then(()=>loadOrders());
 
 }
 
+
 loadOrders();
 
 </script>
+
 
 </body>
 </html>
