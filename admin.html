@@ -1,189 +1,435 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة تحكم أشير</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لوحة تحكم منصة أشير</title>
 
-<style>
-body{
-font-family:Tajawal;
-background:#f1f5f9;
-margin:0;
-}
+  <!-- مكتبة Excel (SheetJS) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
-.header{
-background:#0f172a;
-color:white;
-padding:20px;
-text-align:center;
-font-size:22px;
-}
-
-.container{
-padding:20px;
-}
-
-.card{
-background:white;
-padding:15px;
-border-radius:10px;
-margin-bottom:15px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-}
-
-input{
-width:100%;
-padding:10px;
-margin-bottom:10px;
-}
-
-button{
-padding:10px 15px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
-
-.update{
-background:#f97316;
-color:white;
-}
-
-.export{
-background:#16a34a;
-color:white;
-}
-
-.delete{
-background:red;
-color:white;
-}
-
-table{
-width:100%;
-border-collapse:collapse;
-}
-
-th{
-background:#0f172a;
-color:white;
-padding:10px;
-}
-
-td{
-padding:10px;
-border-bottom:1px solid #ddd;
-}
-
-</style>
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#fff; --text:#0b1220; --muted:#6b7280;
+      --brand:#f97316; --brand2:#fb923c; --dark:#0b1220; --line:#e5e7eb;
+      --shadow: 0 12px 30px rgba(2,6,23,.08);
+      --radius:16px;
+      --good:#16a34a; --bad:#dc2626;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Tahoma,Arial;background:var(--bg);color:var(--text)}
+    .hero{
+      background: linear-gradient(120deg, #0b1220, #111827 40%, #0b1220);
+      color:#fff; padding:22px 16px;
+    }
+    .wrap{max-width:1100px;margin:0 auto;padding:0 12px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logo{
+      width:44px;height:44px;border-radius:14px;display:grid;place-items:center;
+      background:linear-gradient(135deg,var(--brand),var(--brand2));
+      box-shadow:0 10px 20px rgba(249,115,22,.25);
+      font-weight:900;
+    }
+    .title h1{margin:0;font-size:18px}
+    .title p{margin:6px 0 0;color:rgba(255,255,255,.75);font-size:13px}
+    .btn{
+      border:0;border-radius:14px;padding:12px 14px;cursor:pointer;font-weight:900;
+      transition:.15s transform,.15s opacity;
+      display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+    }
+    .btn:active{transform:scale(.98)}
+    .btn.orange{background:var(--brand);color:#fff}
+    .btn.dark{background:#111827;color:#fff}
+    .btn.green{background:var(--good);color:#fff}
+    .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.18)}
+    .btn.red{background:var(--bad);color:#fff}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:-16px}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow);overflow:hidden;
+    }
+    .hd{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+    .hd h2{margin:0;font-size:16px}
+    .bd{padding:16px}
+    input{
+      width:100%;padding:12px 12px;border-radius:14px;border:1px solid var(--line);
+      outline:none;background:#fff;font-size:14px;
+    }
+    .row{display:grid;grid-template-columns:1.5fr .5fr .5fr;gap:10px;align-items:center}
+    @media(max-width:820px){.row{grid-template-columns:1fr}}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+    @media(max-width:820px){.kpis{grid-template-columns:1fr 1fr}}
+    @media(max-width:520px){.kpis{grid-template-columns:1fr}}
+    .kpi{
+      background:linear-gradient(180deg,#fff,#f9fafb);
+      border:1px solid var(--line);border-radius:16px;padding:14px
+    }
+    .kpi b{display:block;font-size:18px}
+    .kpi span{color:var(--muted);font-size:12px}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      background:#fff;border:1px dashed var(--line);padding:10px 12px;border-radius:999px;
+      color:var(--muted);font-size:12px;
+    }
+    .pill.ok{color:var(--good);border-color:rgba(22,163,74,.4)}
+    .pill.err{color:var(--bad);border-color:rgba(220,38,38,.35)}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:12px;border-bottom:1px solid var(--line);text-align:right;font-size:14px;vertical-align:top}
+    th{background:#0b1220;color:#fff;font-size:13px}
+    td small{color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .muted{color:var(--muted);font-size:13px;line-height:1.7}
+    .center{display:grid;place-items:center;min-height:70vh;padding:24px}
+    .login{
+      width:min(460px,100%);
+      background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .login .hd{border:none;background:linear-gradient(120deg,#fff,#fff)}
+    .login .bd{padding:16px}
+    .foot{padding:14px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+    .hide{display:none!important}
+  </style>
 </head>
-
 <body>
 
-<div class="header">
-لوحة تحكم منصة أشير
-</div>
+<header class="hero">
+  <div class="wrap">
+    <div class="top">
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="logo">A</div>
+        <div class="title">
+          <h1>لوحة تحكم منصة أشير</h1>
+          <p id="backendHint">Backend: ...</p>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <a class="btn ghost" href="./index.html">صفحة الطلب</a>
+        <button class="btn dark" id="logoutBtn">تسجيل خروج</button>
+      </div>
+    </div>
+  </div>
+</header>
 
-<div class="container">
+<!-- شاشة تسجيل الدخول -->
+<section id="loginScreen" class="center">
+  <div class="login">
+    <div class="hd">
+      <h2>تسجيل دخول لوحة التحكم</h2>
+      <span class="pill" id="loginStatus">أدخل كلمة السر</span>
+    </div>
+    <div class="bd">
+      <label class="muted">كلمة السر</label>
+      <input id="pass" type="password" placeholder="••••••••" />
+      <div class="actions" style="margin-top:12px">
+        <button class="btn orange" id="loginBtn">دخول</button>
+      </div>
+      <p class="muted" style="margin-top:10px">
+        ⚠️ ملاحظة: هذه حماية واجهة (Front-End). لحماية حقيقية لازم يكون الحذف/القراءة محميين داخل الـBackend.
+      </p>
+    </div>
+    <div class="foot">admin.html</div>
+  </div>
+</section>
 
-<div class="card">
+<!-- لوحة التحكم -->
+<main id="app" class="wrap hide">
+  <div class="grid">
 
-<input id="search" placeholder="بحث...">
+    <section class="card">
+      <div class="hd">
+        <h2>ملخص</h2>
+        <div class="actions">
+          <button class="btn orange" id="refreshBtn">تحديث</button>
+          <button class="btn green" id="excelBtn">تصدير Excel</button>
+          <span class="pill" id="status">جاهز</span>
+        </div>
+      </div>
+      <div class="bd">
+        <div class="kpis">
+          <div class="kpi"><b id="k_total">0</b><span>إجمالي الطلبات</span></div>
+          <div class="kpi"><b id="k_today">0</b><span>طلبات اليوم</span></div>
+          <div class="kpi"><b id="k_cities">0</b><span>عدد المدن</span></div>
+          <div class="kpi"><b id="k_last">-</b><span>آخر طلب</span></div>
+        </div>
+      </div>
+    </section>
 
-<button class="update" onclick="load()">تحديث</button>
+    <section class="card">
+      <div class="hd">
+        <h2>الطلبات</h2>
+        <div style="min-width:280px;flex:1">
+          <input id="search" placeholder="بحث بالاسم / الهاتف / المدينة / الملاحظة..." />
+        </div>
+      </div>
+      <div class="bd" style="padding:0">
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:72px">#</th>
+                <th>الاسم</th>
+                <th>الهاتف</th>
+                <th>المدينة</th>
+                <th>ملاحظة</th>
+                <th>التاريخ</th>
+                <th style="width:120px">حذف</th>
+              </tr>
+            </thead>
+            <tbody id="tbody">
+              <!-- rows -->
+            </tbody>
+          </table>
+        </div>
+        <div class="foot" id="countHint">0 طلب</div>
+      </div>
+    </section>
 
-<button class="export" onclick="exportExcel()">Excel تصدير</button>
-
-</div>
-
-<div class="card">
-
-<table>
-
-<thead>
-<tr>
-<th>الاسم</th>
-<th>الهاتف</th>
-<th>المدينة</th>
-<th>حذف</th>
-</tr>
-</thead>
-
-<tbody id="data"></tbody>
-
-</table>
-
-</div>
-
-</div>
+  </div>
+</main>
 
 <script>
+/** =========================
+ *  إعدادات مهمة (عدّل هنا فقط)
+ *  ========================= */
+const BACKEND_URL = "https://achir-backend.onrender.com";  // ✅ نفس السيرفر
+const ADMIN_PASSWORD = "12345";                           // ✅ غيّرها الآن
 
-function load(){
+document.getElementById("backendHint").textContent = "Backend: " + BACKEND_URL;
 
-let orders = JSON.parse(localStorage.getItem("orders")||"[]");
+/** ====== Session بسيطة ====== */
+const SESSION_KEY = "achir_admin_authed_v1";
 
-let search = document.getElementById("search").value;
+function setLoginStatus(text, type=""){
+  const el = document.getElementById("loginStatus");
+  el.textContent = text;
+  el.className = "pill " + (type==="ok" ? "ok" : type==="err" ? "err" : "");
+}
 
-let html="";
+function setStatus(text, type=""){
+  const el = document.getElementById("status");
+  el.textContent = text;
+  el.className = "pill " + (type==="ok" ? "ok" : type==="err" ? "err" : "");
+}
 
-orders
-.filter(o=>!search || o.name.includes(search))
-.forEach((o,i)=>{
+function isAuthed(){ return localStorage.getItem(SESSION_KEY) === "1"; }
+function authOn(){ localStorage.setItem(SESSION_KEY, "1"); }
+function authOff(){ localStorage.removeItem(SESSION_KEY); }
 
-html+=`
-<tr>
-<td>${o.name}</td>
-<td>${o.phone}</td>
-<td>${o.city}</td>
-<td><button class="delete" onclick="del(${i})">حذف</button></td>
-</tr>
-`;
-
+document.getElementById("logoutBtn").addEventListener("click", ()=>{
+  authOff();
+  location.reload();
 });
 
-document.getElementById("data").innerHTML=html;
-
-}
-
-function del(i){
-
-let orders = JSON.parse(localStorage.getItem("orders")||"[]");
-
-orders.splice(i,1);
-
-localStorage.setItem("orders",JSON.stringify(orders));
-
-load();
-
-}
-
-function exportExcel(){
-
-let orders = JSON.parse(localStorage.getItem("orders")||"[]");
-
-let csv="الاسم,الهاتف,المدينة\n";
-
-orders.forEach(o=>{
-csv+=`${o.name},${o.phone},${o.city}\n`;
+document.getElementById("loginBtn").addEventListener("click", ()=>{
+  const p = document.getElementById("pass").value;
+  if (p === ADMIN_PASSWORD){
+    authOn();
+    setLoginStatus("✅ تم الدخول", "ok");
+    boot();
+  }else{
+    setLoginStatus("❌ كلمة السر غير صحيحة", "err");
+  }
 });
 
-let blob=new Blob([csv]);
-
-let a=document.createElement("a");
-
-a.href=URL.createObjectURL(blob);
-
-a.download="orders.csv";
-
-a.click();
-
+/** ====== API helpers ====== */
+async function apiFetch(path, options){
+  const tries = [
+    BACKEND_URL + path,
+    BACKEND_URL + "/api" + path,
+  ];
+  let lastErr;
+  for (const url of tries){
+    try{
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("API error");
 }
 
-load();
+async function listOrders(){
+  const paths = ["/orders", "/order", "/طلبات", "/requests", "/orders/list"];
+  let lastErr;
+  for (const p of paths){
+    try{
+      const res = await apiFetch(p, {method:"GET"});
+      const data = await res.json();
+      // يدعم: array أو {orders:[]}
+      return Array.isArray(data) ? data : (data.orders || data.data || []);
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("list failed");
+}
 
+async function deleteOrder(id){
+  // مسارات حذف محتملة
+  const paths = [
+    `/orders/${id}`,
+    `/order/${id}`,
+    `/requests/${id}`,
+    `/orders/delete/${id}`
+  ];
+  let lastErr;
+  for (const p of paths){
+    try{
+      await apiFetch(p, {method:"DELETE"});
+      return true;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("delete failed");
+}
+
+/** ====== UI ====== */
+let ORDERS = [];
+
+function normalizeOrder(o){
+  // محاولات أسماء الحقول
+  const id = o.id ?? o._id ?? o.uuid ?? o.orderId ?? o.ID;
+  const name = o.name ?? o.fullName ?? o.username ?? o.الاسم ?? "";
+  const phone = o.phone ?? o.mobile ?? o.tel ?? o.الهاتف ?? "";
+  const city = o.city ?? o.wilaya ?? o.المدينة ?? "";
+  const note = o.note ?? o.notes ?? o.message ?? o.ملاحظة ?? "";
+  const createdAt = o.createdAt ?? o.date ?? o.created ?? o.timestamp ?? o.التاريخ ?? "";
+  return { id, name, phone, city, note, createdAt, raw:o };
+}
+
+function formatDate(x){
+  if (!x) return "-";
+  const d = new Date(x);
+  if (isNaN(d.getTime())) return String(x);
+  const pad = n => String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function isToday(x){
+  const d = new Date(x);
+  if (isNaN(d.getTime())) return false;
+  const t = new Date();
+  return d.getFullYear()===t.getFullYear() && d.getMonth()===t.getMonth() && d.getDate()===t.getDate();
+}
+
+function render(){
+  const q = document.getElementById("search").value.trim().toLowerCase();
+  const filtered = ORDERS.filter(o=>{
+    const s = `${o.name} ${o.phone} ${o.city} ${o.note} ${o.createdAt}`.toLowerCase();
+    return !q || s.includes(q);
+  });
+
+  // KPIs
+  document.getElementById("k_total").textContent = ORDERS.length;
+  document.getElementById("k_today").textContent = ORDERS.filter(o=>isToday(o.createdAt)).length;
+  document.getElementById("k_cities").textContent = new Set(ORDERS.map(o=>o.city).filter(Boolean)).size;
+  document.getElementById("k_last").textContent = ORDERS.length ? formatDate(ORDERS[0].createdAt) : "-";
+
+  const tb = document.getElementById("tbody");
+  tb.innerHTML = "";
+
+  filtered.forEach((o, idx)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><b>${idx+1}</b><br><small>${o.id ?? "-"}</small></td>
+      <td>${escapeHtml(o.name || "-")}</td>
+      <td>${escapeHtml(o.phone || "-")}</td>
+      <td>${escapeHtml(o.city || "-")}</td>
+      <td>${escapeHtml(o.note || "-")}</td>
+      <td><small>${escapeHtml(formatDate(o.createdAt))}</small></td>
+      <td>
+        <button class="btn red" style="padding:10px 12px;border-radius:12px" data-del="${o.id}">حذف</button>
+      </td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  document.getElementById("countHint").textContent = `${filtered.length} طلب`;
+  tb.querySelectorAll("[data-del]").forEach(btn=>{
+    btn.addEventListener("click", async ()=>{
+      const id = btn.getAttribute("data-del");
+      if (!id) return alert("لا يوجد ID للحذف. يجب أن يرجع الـBackend id أو _id.");
+      if (!confirm("تأكيد حذف الطلب؟")) return;
+      try{
+        setStatus("جاري الحذف...");
+        await deleteOrder(id);
+        setStatus("✅ تم الحذف", "ok");
+        await refresh();
+      }catch(e){
+        console.error(e);
+        setStatus("❌ فشل الحذف (تحقق من مسار DELETE بالـBackend)", "err");
+      }
+    });
+  });
+}
+
+function escapeHtml(str){
+  return String(str ?? "").replace(/[&<>"']/g, s => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[s]));
+}
+
+async function refresh(){
+  setStatus("جاري التحديث...");
+  try{
+    const data = await listOrders();
+
+    // رتب من الأحدث للأقدم
+    ORDERS = data.map(normalizeOrder).sort((a,b)=>{
+      const da = new Date(a.createdAt).getTime(); 
+      const db = new Date(b.createdAt).getTime();
+      if (isNaN(da) && isNaN(db)) return 0;
+      if (isNaN(da)) return 1;
+      if (isNaN(db)) return -1;
+      return db - da;
+    });
+
+    setStatus(`✅ تم جلب ${ORDERS.length} طلب`, "ok");
+    render();
+  }catch(e){
+    console.error(e);
+    setStatus("❌ فشل الجلب (تحقق من مسار GET/CORS)", "err");
+  }
+}
+
+document.getElementById("refreshBtn").addEventListener("click", refresh);
+document.getElementById("search").addEventListener("input", render);
+
+document.getElementById("excelBtn").addEventListener("click", ()=>{
+  try{
+    const rows = ORDERS.map((o,i)=>({
+      "#": i+1,
+      "الاسم": o.name || "",
+      "الهاتف": o.phone || "",
+      "المدينة": o.city || "",
+      "ملاحظة": o.note || "",
+      "التاريخ": formatDate(o.createdAt),
+      "id": o.id || ""
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Orders");
+    XLSX.writeFile(wb, "achir-orders.xlsx");
+    setStatus("✅ تم تصدير Excel", "ok");
+  }catch(e){
+    console.error(e);
+    setStatus("❌ فشل تصدير Excel", "err");
+  }
+});
+
+/** ====== تشغيل ====== */
+function boot(){
+  document.getElementById("loginScreen").classList.add("hide");
+  document.getElementById("app").classList.remove("hide");
+  refresh();
+}
+
+(function init(){
+  if (isAuthed()){
+    boot();
+  }else{
+    // ابق في شاشة الدخول
+    document.getElementById("logoutBtn").style.display = "none";
+  }
+})();
 </script>
-
 </body>
-</html>
+  </html>
