@@ -1,85 +1,88 @@
 <!DOCTYPE html>
 <html dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>منصة أشير</title>
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>منصة أشير - إرسال طلب</title>
 <style>
-
-body{
-font-family:Arial;
-background:#f5f7fa;
-padding:20px;
-}
-
-.box{
-background:white;
-padding:20px;
-border-radius:10px;
-max-width:400px;
-margin:auto;
-}
-
-input,textarea{
-width:100%;
-padding:10px;
-margin:10px 0;
-}
-
-button{
-background:#ff6b00;
-color:white;
-border:none;
-padding:12px;
-width:100%;
-font-size:16px;
-}
-
+  body{font-family:Arial;background:#f5f7fa;padding:20px}
+  .box{background:#fff;padding:20px;border-radius:12px;max-width:520px;margin:auto;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+  input,textarea,select{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:10px}
+  button{background:#ff6b00;color:#fff;border:none;padding:13px;width:100%;font-size:16px;border-radius:12px;cursor:pointer}
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .link{background:#0b1a2e;color:#fff;text-decoration:none;padding:10px 12px;border-radius:12px}
+  #msg{margin-top:10px}
 </style>
-
 </head>
 <body>
 
 <div class="box">
+  <div class="top">
+    <h2 style="margin:0">منصة أشير</h2>
+    <a class="link" href="admin.html">لوحة التحكم</a>
+  </div>
 
-<h2>إرسال طلب</h2>
+  <h3>نموذج الطلب</h3>
+  <p style="color:#666">املأ البيانات ثم اضغط إرسال. سيتم حفظ الطلب مباشرة في الـ Backend.</p>
 
-<input id="name" placeholder="الاسم">
-<input id="phone" placeholder="الهاتف">
-<input id="city" placeholder="المدينة">
-<textarea id="note" placeholder="ملاحظة"></textarea>
+  <input id="name" placeholder="الاسم (مثال: أحمد)" />
+  <input id="phone" placeholder="الهاتف (مثال: 0666xxxxxx)" />
+  <input id="city" placeholder="المدينة (مثال: غرداية)" />
 
-<button onclick="sendOrder()">إرسال الطلب</button>
+  <select id="type">
+    <option>طلب خدمة</option>
+    <option>طلب استشارة</option>
+    <option>طلب عرض سعر</option>
+  </select>
 
-<p id="msg"></p>
+  <textarea id="note" placeholder="اكتب تفاصيل الطلب..." rows="4"></textarea>
 
+  <button onclick="sendOrder()">إرسال الطلب</button>
+  <p id="msg"></p>
+
+  <p style="margin-top:12px;color:#777;font-size:13px">
+    Backend: <b id="backendTxt"></b>
+  </p>
 </div>
 
 <script>
+  const BACKEND = "https://achir-backend.onrender.com";
+  const API = BACKEND + "/api/orders";
+  document.getElementById("backendTxt").innerText = BACKEND;
 
-const API = "https://achir-backend.onrender.com/api/orders";
+  async function sendOrder(){
+    const payload = {
+      name: document.getElementById("name").value,
+      phone: document.getElementById("phone").value,
+      city: document.getElementById("city").value,
+      type: document.getElementById("type").value,
+      note: document.getElementById("note").value
+    };
 
-function sendOrder(){
+    document.getElementById("msg").innerHTML = "جاري الإرسال...";
 
-fetch(API,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-name:document.getElementById("name").value,
-phone:document.getElementById("phone").value,
-city:document.getElementById("city").value,
-note:document.getElementById("note").value
-})
-})
-.then(r=>r.json())
-.then(d=>{
-document.getElementById("msg").innerHTML="تم الإرسال بنجاح";
-});
+    try{
+      const r = await fetch(API,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify(payload)
+      });
 
-}
+      const d = await r.json();
+      if(!r.ok){
+        document.getElementById("msg").innerHTML = "❌ فشل: " + (d.error || "خطأ");
+        return;
+      }
 
+      document.getElementById("msg").innerHTML = "✅ تم الإرسال بنجاح";
+      document.getElementById("name").value="";
+      document.getElementById("phone").value="";
+      document.getElementById("city").value="";
+      document.getElementById("note").value="";
+    }catch(e){
+      document.getElementById("msg").innerHTML = "❌ تعذر الاتصال بالـ Backend";
+    }
+  }
 </script>
 
 </body>
