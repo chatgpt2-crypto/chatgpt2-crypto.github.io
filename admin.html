@@ -1,446 +1,372 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>لوحة تحكم منصة أشير</title>
   <style>
     :root{
-      --bg:#f6f7fb; --card:#ffffff; --text:#111827; --muted:#6b7280;
-      --brand:#f97316; --brand2:#fb923c; --line:#e5e7eb;
-      --shadow:0 12px 30px rgba(2,6,23,.10); --radius:18px;
-      --good:#16a34a; --bad:#dc2626;
+      --bg:#f6f7fb; --card:#fff; --text:#0f172a; --muted:#64748b;
+      --brand:#ff7a00; --good:#16a34a; --bad:#dc2626;
+      --line:#e5e7eb; --shadow:0 12px 30px rgba(2,6,23,.10);
+      --radius:18px;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0; font-family: system-ui,-apple-system,Segoe UI,Roboto,Tahoma,Arial;
-      background: radial-gradient(900px 500px at 85% -10%, #ffd9bf, transparent 60%),
-                  radial-gradient(900px 500px at 15% 0%, #c7e0ff, transparent 60%),
-                  var(--bg);
-      color:var(--text);
+    body{margin:0;font-family:Tahoma,Arial;background:linear-gradient(180deg,#0b1220 0,#0b1220 160px,var(--bg) 160px);color:var(--text)}
+    a{color:inherit;text-decoration:none}
+    .topbar{padding:16px 14px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:10px}
+    .logo{width:44px;height:44px;border-radius:14px;background:var(--brand);display:grid;place-items:center;font-weight:800;box-shadow:0 10px 25px rgba(255,122,0,.35)}
+    .brand h1{margin:0;font-size:18px}
+    .brand p{margin:0;color:rgba(255,255,255,.75);font-size:12px}
+    .btn{border:0;border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:700}
+    .btn.brand{background:var(--brand);color:#fff}
+    .btn.good{background:var(--good);color:#fff}
+    .btn.dark{background:#111827;color:#fff;border:1px solid rgba(255,255,255,.15)}
+    .wrap{max-width:1100px;margin:0 auto;padding:14px}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .card-h{padding:18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fafafa)}
+    .card-h h2{margin:0;font-size:18px}
+    .card-h p{margin:8px 0 0;color:var(--muted);font-size:13px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;padding:14px}
+    input,textarea{
+      padding:12px 12px;border-radius:14px;border:1px solid var(--line);
+      outline:none;background:#fff;font-size:15px
     }
-    a{color:inherit; text-decoration:none}
-    .topbar{
-      position:sticky; top:0; z-index:5;
-      background: linear-gradient(90deg, #0b1220, #0f1a33);
-      color:#fff; border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .topbar .inner{
-      max-width:1200px; margin:auto; padding:14px 14px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .brand{display:flex; align-items:center; gap:10px; font-weight:800}
-    .logo{
-      width:40px; height:40px; border-radius:14px; display:grid; place-items:center;
-      background: linear-gradient(135deg, var(--brand), var(--brand2));
-      box-shadow: 0 10px 24px rgba(249,115,22,.35);
-      font-weight:900;
-    }
-    .nav{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
-    .btn{
-      border:none; border-radius:14px; padding:10px 14px;
-      font-weight:800; cursor:pointer; transition:.15s transform, .15s opacity;
-      display:inline-flex; align-items:center; gap:8px;
-    }
-    .btn:active{transform:scale(.98)}
-    .btn.ghost{background:transparent; color:#fff; border:1px solid rgba(255,255,255,.18)}
-    .btn.brand{background:linear-gradient(135deg,var(--brand),var(--brand2)); color:#fff}
-    .btn.dark{background:#0b1220; color:#fff}
-    .btn.gray{background:#fff; border:1px solid var(--line); color:var(--text)}
-    .btn.good{background:var(--good); color:#fff}
-    .btn.bad{background:var(--bad); color:#fff}
-    .wrap{max-width:1200px; margin:auto; padding:18px 14px 50px}
+    .search{flex:1;min-width:220px}
+    .stats{display:flex;gap:10px;flex-wrap:wrap}
+    .pill{background:#fff;border:1px dashed var(--line);border-radius:999px;padding:8px 12px;color:var(--muted);font-size:13px}
+    .pill b{color:var(--text)}
+    .status{margin:0 14px 14px;padding:12px 14px;border-radius:14px;border:1px dashed var(--line);background:#fbfbfb;color:var(--muted);font-size:13px}
+    .ok{border-color:#86efac;background:#f0fdf4;color:#166534}
+    .bad{border-color:#fecaca;background:#fef2f2;color:#991b1b}
 
-    .card{
-      background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-      box-shadow:var(--shadow); overflow:hidden;
+    table{width:100%;border-collapse:collapse}
+    thead th{
+      text-align:right;background:#0b1220;color:#fff;padding:12px;font-size:14px
     }
-    .hd{
-      padding:16px 16px; border-bottom:1px solid var(--line);
-      background: linear-gradient(135deg, #fff, #fff7ed);
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px; flex-wrap:wrap;
-    }
-    .title{margin:0; font-size:20px}
-    .sub{margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.6}
-    .bd{padding:16px}
-    input{
-      width:100%; padding:12px 12px; border-radius:14px;
-      border:1px solid var(--line); outline:none; background:#fff;
-      font-size:15px;
-    }
-    input:focus{border-color:#f59e0b; box-shadow:0 0 0 4px rgba(245,158,11,.15)}
-    .row{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between;
-      margin-bottom:12px;
-    }
-    .pill{
-      display:inline-flex; gap:8px; align-items:center;
-      background:#0b1220; color:#fff; padding:8px 10px; border-radius:999px;
-      font-size:12px;
-    }
-    .msg{margin-top:10px; font-weight:900}
-    .msg.good{color:var(--good)} .msg.bad{color:var(--bad)}
+    tbody td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+    tbody tr:hover{background:#fafafa}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .mini{padding:8px 10px;border-radius:12px;font-weight:800;font-size:12px}
+    .mini.del{background:#fee2e2;color:#991b1b;border:1px solid #fecaca}
+    .mini.edit{background:#e0f2fe;color:#075985;border:1px solid #bae6fd}
+    .mini.save{background:#dcfce7;color:#166534;border:1px solid #86efac}
+    .mini.cancel{background:#f3f4f6;color:#111827;border:1px solid #e5e7eb}
 
-    table{width:100%; border-collapse:collapse}
-    th,td{padding:12px 10px; border-bottom:1px solid var(--line); text-align:right; vertical-align:top}
-    th{background:#0f172a; color:#fff; font-size:14px}
-    td{font-size:14px}
-    td small{color:var(--muted)}
-    .actions{display:flex; gap:8px; flex-wrap:wrap}
-    .empty{
-      padding:18px; border:1px dashed var(--line); border-radius:16px; text-align:center; color:var(--muted);
-      background:#fff;
-    }
-    .grid2{display:grid; grid-template-columns: 1fr; gap:14px}
-    @media (min-width: 980px){ .grid2{grid-template-columns: 1fr} }
-
-    /* Login modal */
-    .overlay{
-      position:fixed; inset:0; background:rgba(0,0,0,.55); display:grid; place-items:center; padding:18px;
-      z-index:100;
-    }
-    .login{
-      width:min(560px, 100%);
-      background:#fff; border-radius:22px; overflow:hidden; box-shadow:0 25px 60px rgba(0,0,0,.25);
-      border:1px solid rgba(255,255,255,.2);
-    }
-    .login .top{
-      padding:18px 16px;
-      background: linear-gradient(135deg, #0b1220, #0f1a33);
-      color:#fff; display:flex; align-items:center; justify-content:space-between; gap:10px;
-    }
-    .login .body{padding:16px}
-    .login .body p{margin:0 0 12px; color:var(--muted); font-size:13px; line-height:1.7}
-    .login .foot{padding:16px; border-top:1px solid var(--line); display:flex; justify-content:flex-end; gap:10px; flex-wrap:wrap}
-    .note{
-      margin-top:10px; font-size:12px; color:var(--muted); line-height:1.7;
-      border-top:1px dashed var(--line); padding-top:10px;
-    }
+    .login{display:grid;place-items:center;padding:24px}
+    .login-box{max-width:520px;width:100%;padding:18px}
+    .login-inner{padding:18px;display:grid;gap:12px}
+    .warn{color:var(--muted);font-size:12px;line-height:1.8}
+    .footer{padding:14px;text-align:center;color:var(--muted);font-size:12px;border-top:1px solid var(--line)}
+    code{background:#f3f4f6;padding:2px 6px;border-radius:8px}
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="inner">
-      <div class="brand">
-        <div class="logo">A</div>
-        <div>
-          <div style="font-weight:900">لوحة تحكم منصة أشير</div>
-          <div style="font-size:12px; opacity:.85">إدارة الطلبات (بحث / حذف / تحديث / Excel)</div>
-        </div>
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="logo">A</div>
+      <div>
+        <h1>لوحة تحكم منصة أشير</h1>
+        <p id="apiLine">Backend: ...</p>
       </div>
-      <nav class="nav">
-        <a class="btn ghost" href="./index.html">صفحة الطلب</a>
-        <button class="btn brand" id="reloadBtn">تحديث</button>
-        <button class="btn good" id="exportBtn">تصدير Excel</button>
-      </nav>
     </div>
-  </header>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn dark" onclick="location.href='index.html'">صفحة الطلب</button>
+      <button class="btn brand" id="btnReload" style="display:none" onclick="loadOrders()">تحديث</button>
+      <button class="btn good" id="btnExport" style="display:none" onclick="exportCSV()">تصدير Excel</button>
+      <button class="btn dark" id="btnLogout" style="display:none" onclick="logout()">خروج</button>
+    </div>
+  </div>
 
-  <main class="wrap">
-    <section class="card">
-      <div class="hd">
-        <div>
-          <h1 class="title">الطلبات</h1>
-          <p class="sub">
-            Backend: <b id="backendText"></b><br>
-            يمكنك البحث بالاسم/الهاتف/المدينة. والتحديث/الحذف تتم مباشرة على الـBackend.
-          </p>
-        </div>
-        <div style="min-width:280px; width:min(480px,100%)">
-          <input id="search" placeholder="بحث…" />
-          <div class="row" style="margin-top:10px; margin-bottom:0">
-            <span class="pill">عدد الطلبات: <b id="count">—</b></span>
-            <span class="pill">آخر تحميل: <b id="last">—</b></span>
-          </div>
-          <div id="status" class="msg" style="display:none"></div>
-        </div>
+  <div class="wrap">
+    <div class="card" id="loginCard">
+      <div class="card-h">
+        <h2>تسجيل دخول لوحة التحكم</h2>
+        <p>أدخل كلمة السر لعرض الطلبات وإدارتها.</p>
       </div>
-
-      <div class="bd">
-        <div id="content" class="grid2">
-          <div class="empty">جاري التحميل…</div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Login Overlay -->
-  <div class="overlay" id="overlay">
-    <div class="login">
-      <div class="top">
-        <div style="display:flex; align-items:center; gap:10px">
-          <div class="logo" style="width:42px;height:42px;border-radius:16px">A</div>
-          <div>
-            <div style="font-weight:900; font-size:18px">تسجيل دخول لوحة التحكم</div>
-            <div style="opacity:.9; font-size:12px">أدخل كلمة السر لعرض الطلبات وإدارتها</div>
+      <div class="login">
+        <div class="login-box">
+          <div class="login-inner">
+            <input id="pass" type="password" placeholder="كلمة السر" />
+            <button class="btn brand" onclick="login()">دخول</button>
+            <div class="warn">⚠️ ملاحظة: هذه حماية واجهة فقط. للحماية الحقيقية يجب حماية الحذف/التعديل داخل الـ Backend.</div>
+            <div id="loginMsg" class="status">كلمة السر الحالية: <code>admin47</code></div>
           </div>
         </div>
-        <div class="pill" style="background:rgba(255,255,255,.12)">admin.html</div>
       </div>
-      <div class="body">
-        <p>كلمة السر الافتراضية: <b>admin47</b></p>
-        <input id="pass" type="password" placeholder="كلمة السر" />
-        <div id="loginMsg" class="msg bad" style="display:none"></div>
+      <div class="footer">admin.html</div>
+    </div>
 
-        <div class="note">
-          ⚠️ هذه حماية واجهة (Front-End) فقط. للحماية الحقيقية: ضع Token في الـBackend وتحقق منه في عمليات الحذف/التحديث.
+    <div class="card" id="panelCard" style="display:none">
+      <div class="card-h">
+        <h2>الطلبات</h2>
+        <p>بحث بالاسم/الهاتف/المدينة — والحذف/التعديل يتم مباشرة على الـ Backend.</p>
+      </div>
+
+      <div class="row">
+        <input class="search" id="q" placeholder="بحث..." oninput="render()" />
+        <div class="stats">
+          <div class="pill">عدد الطلبات: <b id="count">0</b></div>
+          <div class="pill">آخر تحميل: <b id="last">—</b></div>
         </div>
       </div>
-      <div class="foot">
-        <button class="btn gray" id="clearSession">مسح الجلسة</button>
-        <button class="btn brand" id="loginBtn">دخول</button>
+
+      <div id="msg" class="status">جاهز…</div>
+
+      <div style="overflow:auto">
+        <table>
+          <thead>
+            <tr>
+              <th style="min-width:160px">الاسم</th>
+              <th style="min-width:140px">الهاتف</th>
+              <th style="min-width:120px">المدينة</th>
+              <th>ملاحظة</th>
+              <th style="min-width:160px">التاريخ</th>
+              <th style="min-width:220px">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="tbody">
+            <tr><td colspan="6" style="text-align:center;color:#64748b;padding:24px">لا توجد طلبات حالياً</td></tr>
+          </tbody>
+        </table>
       </div>
+
+      <div class="footer">Backend: <code id="apiText"></code></div>
     </div>
   </div>
 
 <script>
-  // ====== إعدادات ======
+  // ✅ عدّل هذا فقط إذا تغيّر رابط الـ Backend
   const API_BASE = "https://achir-backend.onrender.com";
-  document.getElementById("backendText").textContent = API_BASE;
+  document.getElementById("apiLine").textContent = "Backend: " + API_BASE;
+  document.getElementById("apiText").textContent = API_BASE;
 
-  // كلمة السر (واجهة فقط)
-  const ADMIN_PASSWORD = "admin47"; // <-- هنا غيّرها إذا تحب
+  // ✅ كلمة السر (Front-End فقط)
+  const ADMIN_PASSWORD = "admin47";
 
-  // مسارات API (عدّلها لو Backend عندك مختلف)
-  const ENDPOINTS = {
-    list:   () => `${API_BASE}/orders`,
-    update: (id) => `${API_BASE}/orders/${id}`,
-    remove: (id) => `${API_BASE}/orders/${id}`,
-  };
-
-  // ====== أدوات ======
-  const statusEl = document.getElementById("status");
-  function setStatus(text, ok=true){
-    statusEl.style.display = "block";
-    statusEl.className = "msg " + (ok ? "good" : "bad");
-    statusEl.textContent = text;
-  }
-  function clearStatus(){ statusEl.style.display="none"; statusEl.textContent=""; }
-
-  function fmtDate(s){
-    if(!s) return "";
-    const d = new Date(s);
-    if(String(d) === "Invalid Date") return s;
-    return d.toLocaleString("ar-DZ");
-  }
-
-  function csvEscape(v){
-    const s = (v ?? "").toString().replaceAll('"','""');
-    return `"${s}"`;
-  }
-
-  // ====== جلسة بسيطة ======
-  const overlay = document.getElementById("overlay");
-  const sessionKey = "achir_admin_ok";
-
-  function isLogged(){
-    return localStorage.getItem(sessionKey) === "1";
-  }
-  function requireLogin(){
-    overlay.style.display = "grid";
-  }
-  function hideLogin(){
-    overlay.style.display = "none";
-  }
-
-  document.getElementById("clearSession").addEventListener("click", () => {
-    localStorage.removeItem(sessionKey);
-    document.getElementById("pass").value = "";
-    requireLogin();
-  });
-
-  document.getElementById("loginBtn").addEventListener("click", () => {
-    const v = document.getElementById("pass").value;
-    const m = document.getElementById("loginMsg");
-    if(v === ADMIN_PASSWORD){
-      localStorage.setItem(sessionKey, "1");
-      m.style.display = "none";
-      hideLogin();
-      load();
-    }else{
-      m.style.display = "block";
-      m.textContent = "كلمة سر خاطئة";
-    }
-  });
-
-  // دخول عند الضغط Enter
-  document.getElementById("pass").addEventListener("keydown", (e)=>{
-    if(e.key === "Enter") document.getElementById("loginBtn").click();
-  });
-
-  // ====== البيانات ======
   let orders = [];
+  let filtered = [];
 
-  async function fetchJSON(url, options={}){
-    const r = await fetch(url, {
-      ...options,
-      headers: {
-        "Accept":"application/json",
-        ...(options.headers || {})
-      }
-    });
-    if(!r.ok){
-      const t = await r.text().catch(()=> "");
-      throw new Error(`HTTP ${r.status} ${t}`);
-    }
-    return r.json();
+  function setMsg(text, type){
+    const el = document.getElementById("msg");
+    el.className = "status " + (type || "");
+    el.textContent = text;
+  }
+  function setLoginMsg(text, type){
+    const el = document.getElementById("loginMsg");
+    el.className = "status " + (type || "");
+    el.textContent = text;
   }
 
-  function render(list){
-    const content = document.getElementById("content");
-
-    if(!Array.isArray(list) || list.length === 0){
-      content.innerHTML = `<div class="empty">لا توجد طلبات حالياً.</div>`;
+  function login(){
+    const v = document.getElementById("pass").value;
+    if(v !== ADMIN_PASSWORD){
+      setLoginMsg("❌ كلمة سر خاطئة", "bad");
       return;
     }
-
-    const rows = list.map(o => {
-      const id = o.id ?? o._id ?? "";
-      const name = o.name ?? "";
-      const phone = o.phone ?? "";
-      const city = o.city ?? "";
-      const type = o.type ?? "";
-      const note = o.note ?? "";
-      const created = o.created_at ?? o.createdAt ?? o.date ?? "";
-
-      return `
-        <div class="card">
-          <div class="hd">
-            <div>
-              <div style="font-weight:900; font-size:16px">${name || "بدون اسم"} <small style="color:var(--muted)">#${id}</small></div>
-              <div class="sub">
-                <b>الهاتف:</b> ${phone || "-"} — <b>المدينة:</b> ${city || "-"} ${type ? "— <b>النوع:</b> " + type : ""}
-                <br><small>التاريخ: ${fmtDate(created) || "-"}</small>
-              </div>
-            </div>
-            <div class="actions">
-              <button class="btn gray" onclick="editOrder('${id}')">تعديل</button>
-              <button class="btn bad" onclick="deleteOrder('${id}')">حذف</button>
-            </div>
-          </div>
-          <div class="bd">
-            <div style="white-space:pre-wrap; line-height:1.8; color:var(--text)">${note ? note : "<span style='color:var(--muted)'>لا توجد ملاحظة</span>"}</div>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    content.innerHTML = rows;
+    localStorage.setItem("achir_admin_ok","1");
+    showPanel();
+  }
+  function logout(){
+    localStorage.removeItem("achir_admin_ok");
+    location.reload();
+  }
+  function showPanel(){
+    document.getElementById("loginCard").style.display="none";
+    document.getElementById("panelCard").style.display="block";
+    document.getElementById("btnReload").style.display="inline-block";
+    document.getElementById("btnExport").style.display="inline-block";
+    document.getElementById("btnLogout").style.display="inline-block";
+    loadOrders();
   }
 
-  function applySearch(){
-    const q = document.getElementById("search").value.trim().toLowerCase();
-    if(!q){ render(orders); return; }
-    const filtered = orders.filter(o => {
-      const s = [
-        o.id, o._id, o.name, o.phone, o.city, o.type, o.note, o.created_at, o.createdAt
-      ].map(x => (x ?? "").toString().toLowerCase()).join(" ");
-      return s.includes(q);
+  async function apiGet(){
+    const res = await fetch(`${API_BASE}/`);
+    const text = await res.text();
+    let data;
+    try{ data = JSON.parse(text); } catch { data = text; }
+    if(!res.ok) throw new Error(typeof data==="string" ? data : (data.message || "فشل التحميل"));
+    if(!Array.isArray(data)) throw new Error("الـ Backend لم يرجع قائمة (Array).");
+    return data;
+  }
+
+  async function apiDelete(id){
+    const res = await fetch(`${API_BASE}/${id}`, { method:"DELETE" });
+    if(!res.ok){
+      const t = await res.text();
+      throw new Error(t || "فشل الحذف");
+    }
+  }
+
+  async function apiUpdate(id, payload){
+    // نجرب PUT ثم PATCH كخطة بديلة
+    let res = await fetch(`${API_BASE}/${id}`, {
+      method:"PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
     });
-    render(filtered);
-  }
-
-  document.getElementById("search").addEventListener("input", applySearch);
-
-  async function load(){
-    clearStatus();
-    try{
-      setStatus("جاري التحميل…", true);
-      const data = await fetchJSON(ENDPOINTS.list());
-      orders = Array.isArray(data) ? data : [];
-      document.getElementById("count").textContent = orders.length;
-      document.getElementById("last").textContent = new Date().toLocaleTimeString("ar-DZ");
-      setStatus("✅ تم تحميل الطلبات بنجاح", true);
-      applySearch();
-    }catch(e){
-      setStatus("❌ فشل التحميل: " + e.message, false);
-      render([]);
-    }
-  }
-
-  document.getElementById("reloadBtn").addEventListener("click", load);
-
-  // ====== حذف ======
-  window.deleteOrder = async function(id){
-    if(!confirm("هل أنت متأكد من حذف الطلب؟")) return;
-    try{
-      setStatus("جاري الحذف…", true);
-      await fetchJSON(ENDPOINTS.remove(id), { method:"DELETE" });
-      setStatus("✅ تم الحذف", true);
-      await load();
-    }catch(e){
-      setStatus("❌ فشل الحذف: " + e.message, false);
-    }
-  };
-
-  // ====== تعديل (Popup بسيط) ======
-  window.editOrder = async function(id){
-    const o = orders.find(x => (x.id ?? x._id ?? "") == id);
-    if(!o) return alert("الطلب غير موجود.");
-
-    const name = prompt("الاسم:", o.name ?? "");
-    if(name === null) return;
-
-    const phone = prompt("الهاتف:", o.phone ?? "");
-    if(phone === null) return;
-
-    const city = prompt("المدينة:", o.city ?? "");
-    if(city === null) return;
-
-    const note = prompt("ملاحظة:", o.note ?? "");
-    if(note === null) return;
-
-    const payload = { ...o, name, phone, city, note };
-
-    try{
-      setStatus("جاري التحديث…", true);
-      await fetchJSON(ENDPOINTS.update(id), {
-        method:"PUT",
+    if(!res.ok){
+      res = await fetch(`${API_BASE}/${id}`, {
+        method:"PATCH",
         headers: {"Content-Type":"application/json"},
         body: JSON.stringify(payload)
       });
-      setStatus("✅ تم التحديث", true);
-      await load();
-    }catch(e){
-      setStatus("❌ فشل التحديث: " + e.message, false);
     }
-  };
+    if(!res.ok){
+      const t = await res.text();
+      throw new Error(t || "فشل التحديث");
+    }
+  }
 
-  // ====== تصدير Excel (CSV) ======
-  document.getElementById("exportBtn").addEventListener("click", ()=>{
-    if(!orders.length) return alert("لا توجد بيانات للتصدير.");
-    const header = ["id","الاسم","الهاتف","المدينة","النوع","ملاحظة","التاريخ"];
-    const lines = [header.map(csvEscape).join(",")];
+  async function loadOrders(){
+    setMsg("⏳ جاري التحميل...", "");
+    try{
+      orders = await apiGet();
+      // ترتيب تنازلي حسب id أو created_at
+      orders.sort((a,b)=>{
+        const ai = Number(a.id||0), bi = Number(b.id||0);
+        if(bi!==ai) return bi-ai;
+        return String(b.created_at||"").localeCompare(String(a.created_at||""));
+      });
+      document.getElementById("last").textContent = new Date().toLocaleString("ar-DZ");
+      setMsg("✅ تم التحميل بنجاح.", "ok");
+      render();
+    }catch(err){
+      setMsg("❌ فشل التحميل: " + err.message + " (تأكد من المسارات في Backend)", "bad");
+      orders = [];
+      render();
+    }
+  }
 
-    for(const o of orders){
-      const row = [
-        o.id ?? o._id ?? "",
-        o.name ?? "",
-        o.phone ?? "",
-        o.city ?? "",
-        o.type ?? "",
-        o.note ?? "",
-        o.created_at ?? o.createdAt ?? ""
-      ];
-      lines.push(row.map(csvEscape).join(","));
+  function escapeHtml(s){
+    return String(s ?? "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function render(){
+    const q = document.getElementById("q").value.trim().toLowerCase();
+    filtered = orders.filter(o=>{
+      const all = `${o.name||""} ${o.phone||""} ${o.city||""} ${o.note||""}`.toLowerCase();
+      return !q || all.includes(q);
+    });
+
+    document.getElementById("count").textContent = filtered.length;
+
+    const tbody = document.getElementById("tbody");
+    if(filtered.length === 0){
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#64748b;padding:24px">لا توجد طلبات حالياً</td></tr>`;
+      return;
     }
 
-    const blob = new Blob([lines.join("\n")], {type:"text/csv;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
+    tbody.innerHTML = filtered.map(o=>{
+      const id = o.id;
+      const created = o.created_at || "—";
+      return `
+        <tr data-id="${escapeHtml(id)}">
+          <td>
+            <div class="view">${escapeHtml(o.name)}</div>
+            <input class="editf" style="display:none;width:100%" value="${escapeHtml(o.name)}" data-k="name">
+          </td>
+          <td>
+            <div class="view">${escapeHtml(o.phone)}</div>
+            <input class="editf" style="display:none;width:100%" value="${escapeHtml(o.phone)}" data-k="phone">
+          </td>
+          <td>
+            <div class="view">${escapeHtml(o.city)}</div>
+            <input class="editf" style="display:none;width:100%" value="${escapeHtml(o.city)}" data-k="city">
+          </td>
+          <td>
+            <div class="view">${escapeHtml(o.note)}</div>
+            <textarea class="editf" style="display:none;width:100%;min-height:70px" data-k="note">${escapeHtml(o.note)}</textarea>
+          </td>
+          <td>${escapeHtml(created)}</td>
+          <td>
+            <div class="actions">
+              <button class="mini edit" onclick="startEdit(${id})">تعديل</button>
+              <button class="mini save" style="display:none" onclick="saveEdit(${id})">حفظ</button>
+              <button class="mini cancel" style="display:none" onclick="cancelEdit(${id})">إلغاء</button>
+              <button class="mini del" onclick="del(${id})">حذف</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function startEdit(id){
+    const tr = document.querySelector(`tr[data-id="${id}"]`);
+    tr.querySelectorAll(".view").forEach(x=>x.style.display="none");
+    tr.querySelectorAll(".editf").forEach(x=>x.style.display="block");
+    const btns = tr.querySelectorAll(".actions button");
+    btns[0].style.display="none"; // تعديل
+    btns[1].style.display="inline-block"; // حفظ
+    btns[2].style.display="inline-block"; // إلغاء
+  }
+
+  function cancelEdit(id){
+    loadOrders();
+  }
+
+  async function saveEdit(id){
+    const tr = document.querySelector(`tr[data-id="${id}"]`);
+    const inputs = tr.querySelectorAll(".editf");
+    const payload = {};
+    inputs.forEach(i=>{
+      payload[i.getAttribute("data-k")] = i.value.trim();
+    });
+
+    setMsg("⏳ جاري حفظ التعديل...", "");
+    try{
+      await apiUpdate(id, payload);
+      setMsg("✅ تم حفظ التعديل.", "ok");
+      await loadOrders();
+    }catch(err){
+      setMsg("❌ فشل التعديل: " + err.message, "bad");
+    }
+  }
+
+  async function del(id){
+    if(!confirm("هل أنت متأكد من الحذف؟")) return;
+    setMsg("⏳ جاري الحذف...", "");
+    try{
+      await apiDelete(id);
+      setMsg("✅ تم الحذف.", "ok");
+      await loadOrders();
+    }catch(err){
+      setMsg("❌ فشل الحذف: " + err.message, "bad");
+    }
+  }
+
+  function exportCSV(){
+    // Excel يفتح CSV عادي
+    const rows = filtered.length ? filtered : orders;
+    const head = ["id","name","phone","city","note","created_at"];
+    const csv = [head.join(",")].concat(
+      rows.map(o=>head.map(k=>{
+        const v = String(o[k] ?? "");
+        // Escape CSV
+        if(v.includes('"') || v.includes(",") || v.includes("\n")) return `"${v.replaceAll('"','""')}"`;
+        return v;
+      }).join(","))
+    ).join("\n");
+
+    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
     const a = document.createElement("a");
-    a.href = url;
-    a.download = `orders_${new Date().toISOString().slice(0,10)}.csv`;
+    a.href = URL.createObjectURL(blob);
+    a.download = "orders.csv";
     document.body.appendChild(a);
     a.click();
     a.remove();
-    URL.revokeObjectURL(url);
-  });
+  }
 
-  // ====== بدء ======
-  if(!isLogged()) requireLogin(); else hideLogin();
-
-  // لا تحمل إلا بعد الدخول
-  if(isLogged()) load();
+  // Auto open panel if logged
+  if(localStorage.getItem("achir_admin_ok") === "1"){
+    showPanel();
+  }
 </script>
 </body>
-      </html>
+  </html>
