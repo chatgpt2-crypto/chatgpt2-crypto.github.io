@@ -1,88 +1,226 @@
 <!DOCTYPE html>
 <html dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>لوحة التحكم</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>لوحة التحكم - أشير</title>
 <style>
-body{font-family:Arial;background:#f5f7fa;padding:20px}
-.box{background:#fff;padding:20px;border-radius:10px;max-width:800px;margin:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:10px;border:1px solid #ddd;text-align:center}
-th{background:#0b1a2e;color:#fff}
-button{background:red;color:#fff;border:none;padding:5px 10px}
+  body{font-family:Arial;background:#f5f7fa;padding:20px}
+  .wrap{max-width:950px;margin:auto}
+  .card{background:#fff;padding:18px;border-radius:14px;box-shadow:0 10px 30px rgba(0,0,0,.08);margin-bottom:14px}
+  .head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .btn{border:none;padding:10px 12px;border-radius:12px;cursor:pointer}
+  .btn-dark{background:#0b1a2e;color:#fff}
+  .btn-orange{background:#ff6b00;color:#fff}
+  .btn-red{background:#e00000;color:#fff}
+  input{width:100%;padding:12px;border:1px solid #ddd;border-radius:12px}
+  table{width:100%;border-collapse:collapse;overflow:hidden;border-radius:12px}
+  th,td{padding:10px;border:1px solid #eee;text-align:center}
+  th{background:#0b1a2e;color:#fff}
+  .row-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .muted{color:#666}
+  .topline{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .pill{background:#eef2ff;padding:8px 10px;border-radius:999px;font-size:13px}
 </style>
 </head>
 <body>
 
-<div class="box">
-<h2>لوحة التحكم</h2>
-<p id="status">جاري التحميل...</p>
+<div class="wrap">
+  <div class="card">
+    <div class="topline">
+      <div>
+        <h2 style="margin:0">لوحة تحكم منصة أشير</h2>
+        <div class="muted">Backend: <b id="backendTxt"></b></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="btn btn-dark" href="index.html" style="text-decoration:none;display:inline-block">صفحة الطلب</a>
+        <button class="btn btn-orange" onclick="loadOrders()">تحديث</button>
+        <button class="btn btn-dark" onclick="logout()">خروج</button>
+      </div>
+    </div>
+  </div>
 
-<table>
-<tr>
-<th>الاسم</th>
-<th>الهاتف</th>
-<th>المدينة</th>
-<th>حذف</th>
-</tr>
-<tbody id="orders"></tbody>
-</table>
+  <!-- Login -->
+  <div class="card" id="loginCard">
+    <h3 style="margin-top:0">تسجيل دخول</h3>
+    <p class="muted">أدخل كلمة السر للوصول للطلبات.</p>
+    <input id="pass" type="password" placeholder="كلمة السر" />
+    <div style="height:10px"></div>
+    <button class="btn btn-orange" style="width:100%" onclick="login()">دخول</button>
+    <p id="loginMsg"></p>
+  </div>
 
+  <!-- Orders -->
+  <div class="card" id="ordersCard" style="display:none">
+    <div class="head">
+      <div class="pill" id="count">عدد الطلبات: 0</div>
+      <input id="q" placeholder="بحث بالاسم/الهاتف/المدينة..." oninput="render()" style="max-width:380px" />
+    </div>
+    <div style="height:12px"></div>
+    <p id="status" class="muted">...</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>الهاتف</th>
+          <th>المدينة</th>
+          <th>نوع الطلب</th>
+          <th>ملاحظة</th>
+          <th>التاريخ</th>
+          <th>إجراءات</th>
+        </tr>
+      </thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
 </div>
 
 <script>
+  const BACKEND = "https://achir-backend.onrender.com";
+  document.getElementById("backendTxt").innerText = BACKEND;
 
-// مهم: هذا هو Backend الصحيح
-const API = "https://achir-backend.onrender.com/api/orders";
+  const API_LOGIN  = BACKEND + "/api/login";
+  const API_ORDERS = BACKEND + "/api/orders";
 
-function load(){
+  let orders = [];
+  let token = localStorage.getItem("ACHIR_TOKEN") || "";
 
-fetch(API)
-.then(res=>res.json())
-.then(data=>{
+  function showApp(){
+    if(token){
+      document.getElementById("loginCard").style.display="none";
+      document.getElementById("ordersCard").style.display="block";
+      loadOrders();
+    }else{
+      document.getElementById("loginCard").style.display="block";
+      document.getElementById("ordersCard").style.display="none";
+    }
+  }
 
-document.getElementById("status").innerHTML =
-"عدد الطلبات: " + data.length;
+  async function login(){
+    const password = document.getElementById("pass").value;
+    document.getElementById("loginMsg").innerHTML = "جاري التحقق...";
 
-let html="";
+    try{
+      const r = await fetch(API_LOGIN,{
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ password })
+      });
+      const d = await r.json();
 
-data.forEach(o=>{
+      if(!r.ok){
+        document.getElementById("loginMsg").innerHTML = "❌ كلمة سر خاطئة";
+        return;
+      }
 
-html+=`
-<tr>
-<td>${o.name}</td>
-<td>${o.phone}</td>
-<td>${o.city}</td>
-<td>
-<button onclick="del('${o.id}')">حذف</button>
-</td>
-</tr>
-`;
+      token = d.token;
+      localStorage.setItem("ACHIR_TOKEN", token);
+      document.getElementById("loginMsg").innerHTML = "✅ تم الدخول";
+      showApp();
+    }catch(e){
+      document.getElementById("loginMsg").innerHTML = "❌ تعذر الاتصال بالـ Backend";
+    }
+  }
 
-});
+  function logout(){
+    localStorage.removeItem("ACHIR_TOKEN");
+    token="";
+    orders=[];
+    showApp();
+  }
 
-document.getElementById("orders").innerHTML=html;
+  async function loadOrders(){
+    if(!token){ showApp(); return; }
+    document.getElementById("status").innerText = "جاري التحميل...";
 
-})
-.catch(()=>{
-document.getElementById("status").innerHTML="فشل الاتصال بالBackend";
-});
+    try{
+      const r = await fetch(API_ORDERS, {
+        headers:{
+          "Authorization":"Bearer " + token
+        }
+      });
+      const d = await r.json();
 
-}
+      if(!r.ok){
+        document.getElementById("status").innerText = "❌ فشل: " + (d.error || "خطأ");
+        if(d.error === "invalid_token" || d.error === "missing_token"){
+          logout();
+        }
+        return;
+      }
 
-function del(id){
+      orders = Array.isArray(d) ? d : [];
+      document.getElementById("status").innerText = "✅ تم التحميل";
+      render();
+    }catch(e){
+      document.getElementById("status").innerText = "❌ تعذر الاتصال بالـ Backend";
+    }
+  }
 
-fetch(API+"/"+id,{
-method:"DELETE"
-})
-.then(()=>{
-load();
-});
+  function render(){
+    const q = (document.getElementById("q").value || "").toLowerCase().trim();
+    const filtered = orders.filter(o=>{
+      const hay = `${o.name} ${o.phone} ${o.city} ${o.type} ${o.note}`.toLowerCase();
+      return hay.includes(q);
+    });
 
-}
+    document.getElementById("count").innerText = "عدد الطلبات: " + filtered.length;
 
-load();
+    let html = "";
+    filtered.forEach(o=>{
+      html += `
+        <tr>
+          <td>${escapeHtml(o.name)}</td>
+          <td>${escapeHtml(o.phone)}</td>
+          <td>${escapeHtml(o.city)}</td>
+          <td>${escapeHtml(o.type || "")}</td>
+          <td>${escapeHtml(o.note || "")}</td>
+          <td>${escapeHtml((o.created_at || "").replace("T"," ").replace("Z",""))}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn btn-red" onclick="delOrder('${o.id}')">حذف</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
 
+    document.getElementById("rows").innerHTML = html || `<tr><td colspan="7" class="muted">لا توجد طلبات</td></tr>`;
+  }
+
+  async function delOrder(id){
+    if(!confirm("هل تريد حذف هذا الطلب؟")) return;
+
+    try{
+      const r = await fetch(API_ORDERS + "/" + id, {
+        method:"DELETE",
+        headers:{ "Authorization":"Bearer " + token }
+      });
+      const d = await r.json();
+
+      if(!r.ok){
+        alert("فشل الحذف: " + (d.error || "خطأ"));
+        return;
+      }
+
+      orders = orders.filter(x=>x.id !== id);
+      render();
+    }catch(e){
+      alert("تعذر الاتصال بالـ Backend");
+    }
+  }
+
+  function escapeHtml(str){
+    return String(str || "")
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  showApp();
 </script>
 
 </body>
