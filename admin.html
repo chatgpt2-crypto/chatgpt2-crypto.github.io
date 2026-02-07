@@ -2,18 +2,19 @@
 <html dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>Super Admin - أشير</title>
+<title>Super Admin</title>
 
 <style>
+
 body{
-font-family:Arial;
 background:#0b1a2e;
+font-family:Arial;
 color:white;
-padding:20px;
 text-align:center;
+padding:20px;
 }
 
-.box{
+.panel{
 background:white;
 color:black;
 padding:20px;
@@ -22,65 +23,54 @@ max-width:900px;
 margin:auto;
 }
 
-input{
-padding:10px;
-width:200px;
-}
-
 button{
-padding:10px;
 background:#ff6b00;
 color:white;
 border:none;
-margin:5px;
+padding:10px 20px;
+margin:10px;
+cursor:pointer;
 }
 
 table{
 width:100%;
-margin-top:20px;
 border-collapse:collapse;
+margin-top:20px;
 }
 
-td,th{
-border:1px solid #ddd;
+th,td{
 padding:10px;
+border:1px solid #ddd;
 }
 
 th{
 background:#0b1a2e;
 color:white;
 }
+
 </style>
 
 </head>
+
 <body>
 
-<h1>لوحة تحكم Super Admin</h1>
+<h2>لوحة تحكم Super Admin</h2>
 
-<div id="login">
+<div class="panel">
 
-<input type="password" id="pass" placeholder="كلمة السر">
-<button onclick="login()">دخول</button>
-
-<p id="msg"></p>
-
-</div>
-
-<div id="panel" style="display:none">
-
-<div class="box">
-
-<button onclick="load()">تحديث</button>
+<button onclick="loadOrders()">تحديث</button>
 
 <table>
 
 <thead>
+
 <tr>
 <th>الاسم</th>
 <th>الهاتف</th>
 <th>المدينة</th>
 <th>حذف</th>
 </tr>
+
 </thead>
 
 <tbody id="orders"></tbody>
@@ -89,36 +79,19 @@ color:white;
 
 </div>
 
-</div>
-
 <script>
-
-const PASSWORD="superadmin";
 
 const API="https://achir-backend-1.onrender.com/api/orders";
 
-function login(){
+const TOKEN="superadmin123";
 
-let p=document.getElementById("pass").value;
+function loadOrders(){
 
-if(p===PASSWORD){
-
-document.getElementById("login").style.display="none";
-document.getElementById("panel").style.display="block";
-
-load();
-
-}else{
-
-document.getElementById("msg").innerHTML="كلمة سر خاطئة";
-
+fetch(API,{
+headers:{
+"Authorization":"Bearer "+TOKEN
 }
-
-}
-
-function load(){
-
-fetch(API)
+})
 .then(r=>r.json())
 .then(data=>{
 
@@ -128,12 +101,15 @@ data.forEach(o=>{
 
 html+=`
 <tr>
+
 <td>${o.name}</td>
 <td>${o.phone}</td>
 <td>${o.city}</td>
+
 <td>
-<button onclick="del('${o.id}')">حذف</button>
+<button onclick="deleteOrder('${o.id}')">حذف</button>
 </td>
+
 </tr>
 `;
 
@@ -145,14 +121,19 @@ document.getElementById("orders").innerHTML=html;
 
 }
 
-function del(id){
+function deleteOrder(id){
 
 fetch(API+"/"+id,{
-method:"DELETE"
+method:"DELETE",
+headers:{
+"Authorization":"Bearer "+TOKEN
+}
 })
-.then(()=>load());
+.then(()=>loadOrders());
 
 }
+
+loadOrders();
 
 </script>
 
