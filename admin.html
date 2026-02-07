@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم أشير</title>
+
+<style>
+body{
+font-family:Tahoma;
+background:#f4f6f9;
+margin:0;
+}
+
+.header{
+background:#111827;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+}
+
+.container{
+padding:20px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+button{
+background:#ff7a00;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+cursor:pointer;
+margin:5px;
+}
+
+button:hover{
+background:#e56b00;
+}
+
+input{
+padding:8px;
+width:100%;
+margin-bottom:10px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:right;
+}
+
+th{
+background:#111827;
+color:white;
+}
+
+.delete{
+background:red;
+}
+
+.export{
+background:green;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+لوحة تحكم منصة أشير
+</div>
+
+<div class="container">
+
+<div class="card">
+
+<input type="text" id="search" placeholder="بحث...">
+
+<button onclick="loadOrders()">تحديث</button>
+
+<button class="export" onclick="exportExcel()">تصدير Excel</button>
+
+</div>
+
+<div class="card">
+
+<table id="table">
+
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>المدينة</th>
+<th>التاريخ</th>
+<th>حذف</th>
+</tr>
+</thead>
+
+<tbody id="tbody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+let orders = [];
+
+async function loadOrders(){
+
+try{
+
+let res = await fetch("https://achir-backend.onrender.com/orders");
+
+orders = await res.json();
+
+showOrders();
+
+}catch{
+
+alert("فشل الاتصال بالخادم");
+
+}
+
+}
+
+function showOrders(){
+
+let tbody = document.getElementById("tbody");
+
+tbody.innerHTML="";
+
+let search = document.getElementById("search").value;
+
+orders
+.filter(o => !search || o.name.includes(search) || o.phone.includes(search))
+.forEach(o => {
+
+tbody.innerHTML += `
+<tr>
+<td>${o.name}</td>
+<td>${o.phone}</td>
+<td>${o.city}</td>
+<td>${o.date}</td>
+<td><button class="delete" onclick="deleteOrder('${o._id}')">حذف</button></td>
+</tr>
+`;
+
+});
+
+}
+
+async function deleteOrder(id){
+
+if(!confirm("حذف الطلب؟")) return;
+
+await fetch("https://achir-backend.onrender.com/orders/"+id,{
+method:"DELETE"
+});
+
+loadOrders();
+
+}
+
+function exportExcel(){
+
+let csv="الاسم,الهاتف,المدينة,التاريخ\n";
+
+orders.forEach(o=>{
+csv+=`${o.name},${o.phone},${o.city},${o.date}\n`;
+});
+
+let blob=new Blob([csv]);
+
+let a=document.createElement("a");
+
+a.href=URL.createObjectURL(blob);
+
+a.download="orders.csv";
+
+a.click();
+
+}
+
+document.getElementById("search").oninput=showOrders;
+
+loadOrders();
+
+</script>
+
+</body>
+  </html>
