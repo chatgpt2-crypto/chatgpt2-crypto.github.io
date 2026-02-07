@@ -1,89 +1,144 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>منصة أشير - إرسال طلب</title>
-<style>
-  body{font-family:Arial;background:#f5f7fa;padding:20px}
-  .box{background:#fff;padding:20px;border-radius:12px;max-width:520px;margin:auto;box-shadow:0 10px 30px rgba(0,0,0,.08)}
-  input,textarea,select{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:10px}
-  button{background:#ff6b00;color:#fff;border:none;padding:13px;width:100%;font-size:16px;border-radius:12px;cursor:pointer}
-  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-  .link{background:#0b1a2e;color:#fff;text-decoration:none;padding:10px 12px;border-radius:12px}
-  #msg{margin-top:10px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>منصة أشير - إرسال طلب</title>
+  <style>
+    :root{--bg:#f5f7fa;--card:#fff;--text:#0b1a2e;--muted:#6b7280;--brand:#ff6b00;--line:#e5e7eb}
+    *{box-sizing:border-box}
+    body{font-family:Arial,system-ui; background:var(--bg); margin:0; padding:22px; color:var(--text)}
+    .wrap{max-width:920px; margin:auto}
+    .hero{background:linear-gradient(135deg,#0b1a2e,#142c52); color:#fff; padding:18px; border-radius:16px; box-shadow:0 10px 25px rgba(0,0,0,.08)}
+    .hero h1{margin:0; font-size:22px}
+    .hero p{margin:6px 0 0; opacity:.9}
+    .grid{display:grid; grid-template-columns:1fr; gap:16px; margin-top:16px}
+    @media(min-width:880px){.grid{grid-template-columns:1.1fr .9fr}}
+    .card{background:var(--card); border-radius:16px; padding:18px; box-shadow:0 10px 25px rgba(0,0,0,.06); border:1px solid var(--line)}
+    label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px}
+    input,select,textarea{
+      width:100%; padding:12px 12px; border:1px solid var(--line); border-radius:12px; outline:none; font-size:15px; background:#fff
+    }
+    textarea{min-height:110px; resize:vertical}
+    .row{display:grid; grid-template-columns:1fr; gap:12px}
+    @media(min-width:520px){.row{grid-template-columns:1fr 1fr}}
+    .btn{
+      width:100%; border:0; padding:14px; border-radius:12px;
+      background:var(--brand); color:#fff; font-weight:700; font-size:16px; cursor:pointer
+    }
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+    .hint{font-size:13px; color:var(--muted); margin-top:10px}
+    .ok{color:#0a7a2f; font-weight:700}
+    .err{color:#b00020; font-weight:700}
+    .pill{display:inline-block; padding:6px 10px; border-radius:999px; background:#fff; color:#0b1a2e; font-weight:700; font-size:12px}
+    .link{display:inline-block; margin-top:10px; text-decoration:none; color:#0b1a2e; font-weight:700}
+    .link:hover{text-decoration:underline}
+  </style>
 </head>
 <body>
+  <div class="wrap">
+    <div class="hero">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <div>
+          <h1>منصة أشير — إرسال طلب</h1>
+          <p>أدخل بياناتك وسيتم إرسال الطلب مباشرة إلى النظام.</p>
+        </div>
+        <span class="pill" id="apiPill">Backend: ...</span>
+      </div>
+    </div>
 
-<div class="box">
-  <div class="top">
-    <h2 style="margin:0">منصة أشير</h2>
-    <a class="link" href="admin.html">لوحة التحكم</a>
+    <div class="grid">
+      <div class="card">
+        <h2 style="margin:0 0 6px">نموذج الطلب</h2>
+        <div class="hint">ملاحظة: اكتب رقم هاتف صحيح ليتم التواصل.</div>
+
+        <label>الاسم</label>
+        <input id="name" placeholder="مثال: حسين التونسي"/>
+
+        <div class="row">
+          <div>
+            <label>الهاتف</label>
+            <input id="phone" placeholder="مثال: 0666376417"/>
+          </div>
+          <div>
+            <label>المدينة</label>
+            <input id="city" placeholder="مثال: Ghardaia"/>
+          </div>
+        </div>
+
+        <label>نوع الطلب</label>
+        <select id="type">
+          <option value="طلب عرض سعر">طلب عرض سعر</option>
+          <option value="طلب خدمة">طلب خدمة</option>
+          <option value="استفسار">استفسار</option>
+        </select>
+
+        <label>ملاحظة</label>
+        <textarea id="note" placeholder="اكتب تفاصيل الطلب..."></textarea>
+
+        <button class="btn" id="sendBtn" onclick="sendOrder()">إرسال الطلب</button>
+
+        <div class="hint" id="msg"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 10px">لوحة الإدارة</h3>
+        <div class="hint">الدخول للوحة التحكم (Super Admin):</div>
+        <a class="link" href="./admin.html">فتح لوحة Super Admin</a>
+        <hr style="border:none;border-top:1px solid var(--line); margin:16px 0">
+        <div class="hint">
+          إذا ظهر “فشل الاتصال” فهذا يعني أن الـ Backend في Render نائم (Free) أو CORS غير مضبوط.
+        </div>
+      </div>
+    </div>
   </div>
 
-  <h3>نموذج الطلب</h3>
-  <p style="color:#666">املأ البيانات ثم اضغط إرسال. سيتم حفظ الطلب مباشرة في الـ Backend.</p>
-
-  <input id="name" placeholder="الاسم (مثال: أحمد)" />
-  <input id="phone" placeholder="الهاتف (مثال: 0666xxxxxx)" />
-  <input id="city" placeholder="المدينة (مثال: غرداية)" />
-
-  <select id="type">
-    <option>طلب خدمة</option>
-    <option>طلب استشارة</option>
-    <option>طلب عرض سعر</option>
-  </select>
-
-  <textarea id="note" placeholder="اكتب تفاصيل الطلب..." rows="4"></textarea>
-
-  <button onclick="sendOrder()">إرسال الطلب</button>
-  <p id="msg"></p>
-
-  <p style="margin-top:12px;color:#777;font-size:13px">
-    Backend: <b id="backendTxt"></b>
-  </p>
-</div>
-
 <script>
-  const BACKEND = "https://achir-backend.onrender.com";
-  const API = BACKEND + "/api/orders";
-  document.getElementById("backendTxt").innerText = BACKEND;
+  // غيّر هذا فقط إذا كان عندك رابط Render مختلف
+  const API_BASE = "https://achir-backend.onrender.com";
+  document.getElementById("apiPill").textContent = "Backend: " + API_BASE;
 
   async function sendOrder(){
+    const btn = document.getElementById("sendBtn");
+    const msg = document.getElementById("msg");
+    msg.textContent = "";
     const payload = {
-      name: document.getElementById("name").value,
-      phone: document.getElementById("phone").value,
-      city: document.getElementById("city").value,
+      name: document.getElementById("name").value.trim(),
+      phone: document.getElementById("phone").value.trim(),
+      city: document.getElementById("city").value.trim(),
       type: document.getElementById("type").value,
-      note: document.getElementById("note").value
+      note: document.getElementById("note").value.trim()
     };
 
-    document.getElementById("msg").innerHTML = "جاري الإرسال...";
+    if(!payload.name || !payload.phone || !payload.city){
+      msg.innerHTML = '<span class="err">⚠️ الرجاء ملء الاسم والهاتف والمدينة.</span>';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "جاري الإرسال...";
 
     try{
-      const r = await fetch(API,{
+      const r = await fetch(API_BASE + "/api/orders",{
         method:"POST",
-        headers:{ "Content-Type":"application/json" },
+        headers:{"Content-Type":"application/json"},
         body: JSON.stringify(payload)
       });
 
-      const d = await r.json();
+      const data = await r.json().catch(()=>({}));
       if(!r.ok){
-        document.getElementById("msg").innerHTML = "❌ فشل: " + (d.error || "خطأ");
-        return;
+        msg.innerHTML = '<span class="err">❌ فشل الإرسال: ' + (data.error || r.status) + '</span>';
+      }else{
+        msg.innerHTML = '<span class="ok">✅ تم الإرسال بنجاح.</span>';
+        document.getElementById("note").value="";
       }
-
-      document.getElementById("msg").innerHTML = "✅ تم الإرسال بنجاح";
-      document.getElementById("name").value="";
-      document.getElementById("phone").value="";
-      document.getElementById("city").value="";
-      document.getElementById("note").value="";
     }catch(e){
-      document.getElementById("msg").innerHTML = "❌ تعذر الاتصال بالـ Backend";
+      msg.innerHTML = '<span class="err">❌ فشل الاتصال بالـ Backend.</span>';
+    }finally{
+      btn.disabled = false;
+      btn.textContent = "إرسال الطلب";
     }
   }
 </script>
-
 </body>
 </html>
