@@ -1,79 +1,73 @@
 <!DOCTYPE html>
-<html dir="rtl">
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>Super Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة تحكم Super Admin - أشير</title>
 
 <style>
-
 body{
-background:#0b1a2e;
 font-family:Arial;
-color:white;
+background:#0b1f3a;
+color:#fff;
 text-align:center;
-padding:20px;
 }
 
-.panel{
-background:white;
-color:black;
+.container{
+background:#fff;
+color:#000;
+margin:20px;
 padding:20px;
 border-radius:10px;
-max-width:900px;
-margin:auto;
 }
 
 button{
-background:#ff6b00;
-color:white;
+background:#ff7a00;
+color:#fff;
 border:none;
-padding:10px 20px;
-margin:10px;
+padding:8px 12px;
 cursor:pointer;
 }
 
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:20px;
-}
-
-th,td{
-padding:10px;
-border:1px solid #ddd;
 }
 
 th{
-background:#0b1a2e;
-color:white;
+background:#0b1f3a;
+color:#fff;
+padding:10px;
 }
 
+td{
+padding:10px;
+border-bottom:1px solid #ccc;
+}
 </style>
 
 </head>
-
 <body>
 
-<h2>لوحة تحكم Super Admin</h2>
+<h2>Super Admin لوحة تحكم</h2>
 
-<div class="panel">
+<div class="container">
 
 <button onclick="loadOrders()">تحديث</button>
 
 <table>
 
 <thead>
-
 <tr>
 <th>الاسم</th>
 <th>الهاتف</th>
 <th>المدينة</th>
 <th>حذف</th>
 </tr>
-
 </thead>
 
-<tbody id="orders"></tbody>
+<tbody id="orders">
+</tbody>
 
 </table>
 
@@ -83,7 +77,7 @@ color:white;
 
 const API="https://achir-backend-1.onrender.com/api/orders";
 
-const TOKEN="superadmin123";
+const TOKEN="achir_super_admin_2026";
 
 function loadOrders(){
 
@@ -101,15 +95,12 @@ data.forEach(o=>{
 
 html+=`
 <tr>
-
 <td>${o.name}</td>
 <td>${o.phone}</td>
 <td>${o.city}</td>
-
 <td>
 <button onclick="deleteOrder('${o.id}')">حذف</button>
 </td>
-
 </tr>
 `;
 
