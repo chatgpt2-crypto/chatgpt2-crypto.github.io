@@ -1,21 +1,19 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-
+<html lang="ar">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>لوحة تحكم Super Admin - منصة أشير</title>
+<title>Super Admin - منصة أشير</title>
 
 <style>
 
 body{
 font-family:Arial;
 background:#0b1a2e;
-margin:0;
-padding:20px;
 color:white;
 text-align:center;
+margin:0;
+padding:20px;
 }
 
 .box{
@@ -23,7 +21,7 @@ background:white;
 color:black;
 padding:20px;
 border-radius:12px;
-max-width:900px;
+max-width:800px;
 margin:auto;
 }
 
@@ -36,8 +34,9 @@ background:#ff6b00;
 color:white;
 border:none;
 padding:10px 20px;
-cursor:pointer;
+margin:10px;
 border-radius:6px;
+cursor:pointer;
 font-size:16px;
 }
 
@@ -54,7 +53,7 @@ margin-top:20px;
 th{
 background:#0b1a2e;
 color:white;
-padding:12px;
+padding:10px;
 }
 
 td{
@@ -70,7 +69,6 @@ font-weight:bold;
 </style>
 
 </head>
-
 <body>
 
 <h1>لوحة تحكم Super Admin</h1>
@@ -79,22 +77,21 @@ font-weight:bold;
 
 <button onclick="loadOrders()">تحديث</button>
 
-<div class="status" id="status">جاري التحميل...</div>
+<div class="status" id="status">جاري الاتصال...</div>
 
 <table>
 
 <thead>
-
 <tr>
 <th>الاسم</th>
 <th>الهاتف</th>
 <th>المدينة</th>
 <th>حذف</th>
 </tr>
-
 </thead>
 
-<tbody id="orders"></tbody>
+<tbody id="orders">
+</tbody>
 
 </table>
 
@@ -106,9 +103,10 @@ const API="https://achir-backend-1.onrender.com/api/orders";
 
 const TOKEN="achir_super_admin_2026";
 
+
 function loadOrders(){
 
-document.getElementById("status").innerHTML="جاري التحميل...";
+document.getElementById("status").innerHTML="جاري تحميل الطلبات...";
 
 fetch(API,{
 headers:{
@@ -120,44 +118,42 @@ headers:{
 
 .then(data=>{
 
-document.getElementById("status").innerHTML=
-"عدد الطلبات: "+data.length;
-
 let html="";
+
+if(data.length===0){
+
+html="<tr><td colspan='4'>لا توجد طلبات</td></tr>";
+
+}else{
 
 data.forEach(o=>{
 
 html+=`
 <tr>
-
 <td>${o.name}</td>
-
 <td>${o.phone}</td>
-
 <td>${o.city}</td>
-
 <td>
-<button class="delete"
-onclick="deleteOrder('${o.id}')">
+<button class="delete" onclick="deleteOrder('${o.id}')">
 حذف
 </button>
 </td>
-
 </tr>
 `;
 
 });
 
+}
+
 document.getElementById("orders").innerHTML=html;
+
+document.getElementById("status").innerHTML="✅ متصل بالBackend";
 
 })
 
 .catch(err=>{
 
-document.getElementById("status").innerHTML=
-"فشل الاتصال بالBackend";
-
-console.log(err);
+document.getElementById("status").innerHTML="❌ فشل الاتصال بالBackend";
 
 });
 
@@ -166,7 +162,7 @@ console.log(err);
 
 function deleteOrder(id){
 
-if(!confirm("هل تريد حذف الطلب؟")) return;
+if(!confirm("تأكيد الحذف؟")) return;
 
 fetch(API+"/"+id,{
 
@@ -193,5 +189,4 @@ loadOrders();
 </script>
 
 </body>
-
 </html>
