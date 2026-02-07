@@ -1,131 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منصة أشير</title>
-
-<style>
-body{
-font-family:Tahoma,Arial;
-background:#f5f7fb;
-margin:0;
-padding:0;
-}
-
-.header{
-background:linear-gradient(135deg,#ff7a00,#ffb347);
-color:#fff;
-padding:20px;
-text-align:center;
-font-size:24px;
-font-weight:bold;
-}
-
-.container{
-max-width:500px;
-margin:30px auto;
-background:#fff;
-padding:20px;
-border-radius:12px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
-}
-
-input,textarea{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:8px;
-border:1px solid #ddd;
-font-size:16px;
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:15px;
-border:none;
-border-radius:8px;
-background:#ff7a00;
-color:#fff;
-font-size:18px;
-cursor:pointer;
-}
-
-button:hover{
-background:#e56700;
-}
-
-.success{
-color:green;
-margin-top:10px;
-text-align:center;
-}
-
-.footer{
-text-align:center;
-margin-top:20px;
-color:#777;
-}
-</style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>منصة أشير - طلب خدمة</title>
+  <style>
+    :root{
+      --bg:#f5f7fb; --card:#fff; --text:#0b1220; --muted:#6b7280;
+      --brand:#f97316; --brand2:#fb923c; --line:#e5e7eb;
+      --shadow: 0 12px 30px rgba(2,6,23,.08);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Tahoma,Arial;background:var(--bg);color:var(--text)}
+    .hero{
+      background: linear-gradient(120deg, #0b1220, #111827 40%, #0b1220);
+      color:#fff; padding:28px 16px;
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:0 12px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      display:grid;place-items:center;
+      background: linear-gradient(135deg,var(--brand),var(--brand2));
+      box-shadow: 0 10px 20px rgba(249,115,22,.25);
+      font-weight:900;
+    }
+    .brand h1{margin:0;font-size:20px}
+    .brand p{margin:6px 0 0;color:rgba(255,255,255,.75);font-size:13px}
+    .btn{
+      border:0;border-radius:14px;padding:12px 14px;cursor:pointer;font-weight:800;
+      transition:.15s transform, .15s opacity;
+      display:inline-flex;align-items:center;gap:10px;text-decoration:none;
+    }
+    .btn:active{transform:scale(.98)}
+    .btn.orange{background:var(--brand);color:#fff}
+    .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.18)}
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-top:-18px}
+    @media (max-width:860px){.grid{grid-template-columns:1fr}}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      box-shadow:var(--shadow); overflow:hidden;
+    }
+    .card .hd{padding:16px 16px 10px;border-bottom:1px solid var(--line)}
+    .card .hd h2{margin:0;font-size:16px}
+    .card .bd{padding:16px}
+    label{display:block;font-size:13px;color:var(--muted);margin:10px 0 6px}
+    input, textarea, select{
+      width:100%;padding:12px 12px;border-radius:14px;border:1px solid var(--line);
+      outline:none;background:#fff;font-size:14px;
+    }
+    textarea{min-height:92px;resize:vertical}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:560px){.row{grid-template-columns:1fr}}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .muted{color:var(--muted);font-size:13px;line-height:1.7}
+    .ok{color:#16a34a;font-weight:800}
+    .err{color:#dc2626;font-weight:800}
+    .pill{
+      display:inline-flex;gap:8px;align-items:center;
+      background:#fff;border:1px dashed var(--line);padding:10px 12px;border-radius:999px;
+      color:var(--muted);font-size:12px;
+    }
+    .small{font-size:12px;color:var(--muted)}
+    .foot{padding:16px;text-align:center;color:var(--muted);font-size:12px}
+    .kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    @media (max-width:560px){.kpi{grid-template-columns:1fr}}
+    .k{
+      background:linear-gradient(180deg,#fff,#f9fafb);
+      border:1px solid var(--line);border-radius:16px;padding:14px
+    }
+    .k b{display:block;font-size:18px}
+    .k span{color:var(--muted);font-size:12px}
+  </style>
 </head>
 <body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div class="logo">A</div>
+          <div class="brand">
+            <h1>منصة أشير</h1>
+            <p>طلب خدمة / تسجيل طلب — مرتبط مباشرة بلوحة التحكم</p>
+          </div>
+        </div>
+        <a class="btn ghost" href="./admin.html">لوحة التحكم</a>
+      </div>
+    </div>
+  </header>
 
-<div class="header">
-منصة أشير
-</div>
+  <main class="wrap">
+    <div class="grid">
+      <section class="card">
+        <div class="hd">
+          <h2>نموذج الطلب</h2>
+          <div class="small" id="backendHint"></div>
+        </div>
+        <div class="bd">
+          <form id="orderForm">
+            <label>الاسم الكامل</label>
+            <input id="name" required placeholder="مثال: حسين التونسي"/>
 
-<div class="container">
+            <div class="row">
+              <div>
+                <label>رقم الهاتف</label>
+                <input id="phone" required inputmode="tel" placeholder="0666xxxxxx"/>
+              </div>
+              <div>
+                <label>المدينة</label>
+                <input id="city" required placeholder="Ghardaia / Alger / Oran ..."/>
+              </div>
+            </div>
 
-<h3>إرسال طلب</h3>
+            <label>ملاحظة</label>
+            <textarea id="note" placeholder="اكتب تفاصيل الطلب..."></textarea>
 
-<input id="name" placeholder="الاسم">
-<input id="phone" placeholder="رقم الهاتف">
-<input id="city" placeholder="المدينة">
-<textarea id="note" placeholder="ملاحظة"></textarea>
+            <div class="actions">
+              <button class="btn orange" type="submit">إرسال الطلب</button>
+              <button class="btn" type="button" id="whatsBtn" style="background:#111827;color:#fff">إرسال عبر واتساب</button>
+              <span class="pill" id="status">جاهز</span>
+            </div>
 
-<button onclick="send()">إرسال الطلب</button>
+            <div class="small" style="margin-top:10px">
+              * عند الإرسال سيتم حفظ الطلب في الـBackend ويظهر فوراً داخل لوحة التحكم.
+            </div>
+          </form>
+        </div>
+        <div class="foot">© منصة أشير</div>
+      </section>
 
-<div id="msg" class="success"></div>
-
-</div>
-
-<div class="footer">
-© 2026 منصة أشير
-</div>
+      <aside class="card">
+        <div class="hd"><h2>معلومات سريعة</h2></div>
+        <div class="bd">
+          <div class="kpi">
+            <div class="k"><b>ربط مباشر</b><span>الطلبات تظهر في لوحة التحكم</span></div>
+            <div class="k"><b>بحث + حذف</b><span>إدارة كاملة للطلبات</span></div>
+            <div class="k"><b>Excel</b><span>تصدير فوري للملف</span></div>
+          </div>
+          <p class="muted" style="margin-top:12px">
+            إذا واجهت مشكلة عدم ظهور الطلب، السبب غالباً:
+            <br>1) رابط الـBackend خطأ
+            <br>2) CORS غير مفعّل في السيرفر
+            <br>3) مسار API مختلف
+          </p>
+        </div>
+      </aside>
+    </div>
+  </main>
 
 <script>
+/** =========================
+ *  إعدادات مهمة (عدّل هنا فقط)
+ *  ========================= */
+const BACKEND_URL = "https://achir-backend.onrender.com"; // ✅ نفس الذي عندك
+const WHATSAPP_NUMBER = "213666376417"; // رقم الاشعارات (بدون +)
 
-const API="https://achir-backend.onrender.com";
+document.getElementById("backendHint").textContent = "Backend: " + BACKEND_URL;
 
-function send(){
+const statusEl = document.getElementById("status");
+const form = document.getElementById("orderForm");
 
-let data={
-name:document.getElementById("name").value,
-phone:document.getElementById("phone").value,
-city:document.getElementById("city").value,
-note:document.getElementById("note").value
-};
-
-fetch(API+"/api/orders",{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify(data)
-})
-.then(r=>r.json())
-.then(d=>{
-document.getElementById("msg").innerHTML="تم إرسال الطلب بنجاح";
-})
-.catch(e=>{
-document.getElementById("msg").innerHTML="خطأ في الإرسال";
-});
-
+function setStatus(text, type=""){
+  statusEl.textContent = text;
+  statusEl.className = "pill " + (type === "ok" ? "ok" : type === "err" ? "err" : "");
 }
 
-</script>
+function sanitizePhone(p){
+  return (p||"").toString().trim().replace(/[^\d+]/g,"");
+}
 
+/** يحاول أكثر من مسار شائع */
+async function apiFetch(path, options){
+  const tries = [
+    BACKEND_URL + path,
+    BACKEND_URL + "/api" + path,
+  ];
+  let lastErr;
+  for (const url of tries){
+    try{
+      const res = await fetch(url, options);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res;
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("API error");
+}
+
+async function createOrder(payload){
+  // مسارات محتملة
+  const paths = ["/orders", "/order", "/طلبات", "/requests", "/orders/create"];
+  let lastErr;
+  for (const p of paths){
+    try{
+      const res = await apiFetch(p, {
+        method:"POST",
+        headers: {"Content-Type":"application/json"},
+        body: JSON.stringify(payload)
+      });
+      return await res.json().catch(()=> ({}));
+    }catch(e){ lastErr = e; }
+  }
+  throw lastErr || new Error("create failed");
+}
+
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  setStatus("جاري الإرسال...");
+  const name = document.getElementById("name").value.trim();
+  const phone = sanitizePhone(document.getElementById("phone").value);
+  const city = document.getElementById("city").value.trim();
+  const note = document.getElementById("note").value.trim();
+
+  const payload = { name, phone, city, note, createdAt: new Date().toISOString() };
+
+  try{
+    await createOrder(payload);
+    setStatus("✅ تم إرسال الطلب بنجاح", "ok");
+    form.reset();
+  }catch(err){
+    console.error(err);
+    setStatus("❌ فشل الإرسال (تحقق من الـBackend/CORS)", "err");
+  }
+});
+
+document.getElementById("whatsBtn").addEventListener("click", ()=>{
+  const name = document.getElementById("name").value.trim();
+  const phone = sanitizePhone(document.getElementById("phone").value);
+  const city = document.getElementById("city").value.trim();
+  const note = document.getElementById("note").value.trim();
+
+  const msg =
+`طلب جديد - منصة أشير
+الاسم: ${name || "-"}
+الهاتف: ${phone || "-"}
+المدينة: ${city || "-"}
+ملاحظة: ${note || "-"}`;
+
+  const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+  window.open(url, "_blank");
+});
+</script>
 </body>
-  </html>
+            </html>
