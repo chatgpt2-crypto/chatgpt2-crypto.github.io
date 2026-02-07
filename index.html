@@ -1,156 +1,86 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>منصة أشير - صفحة الطلب</title>
-  <style>
-    :root{
-      --bg:#f6f7fb; --card:#fff; --text:#0f172a; --muted:#64748b;
-      --brand:#ff7a00; --brand2:#0ea5e9; --line:#e5e7eb; --shadow:0 12px 30px rgba(2,6,23,.10);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Tahoma,Arial;background:linear-gradient(180deg,#0b1220 0,#0b1220 140px,var(--bg) 140px);color:var(--text)}
-    .topbar{padding:18px 14px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{width:44px;height:44px;border-radius:14px;background:var(--brand);display:grid;place-items:center;font-weight:800;box-shadow:0 10px 25px rgba(255,122,0,.35)}
-    .brand h1{margin:0;font-size:18px}
-    .brand p{margin:0;color:rgba(255,255,255,.75);font-size:12px}
-    .btn{border:0;border-radius:14px;padding:10px 14px;cursor:pointer;font-weight:700}
-    .btn.brand{background:var(--brand);color:#fff}
-    .btn.dark{background:#111827;color:#fff;border:1px solid rgba(255,255,255,.15)}
-    .wrap{max-width:980px;margin:0 auto;padding:14px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .card-h{padding:18px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fafafa)}
-    .card-h h2{margin:0;font-size:18px}
-    .card-h p{margin:8px 0 0;color:var(--muted);font-size:13px}
-    form{padding:18px;display:grid;gap:12px}
-    .grid{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr))}
-    @media(max-width:720px){.grid{grid-template-columns:1fr}}
-    label{font-size:13px;color:var(--muted)}
-    input,textarea,select{
-      width:100%;padding:12px 12px;border-radius:14px;border:1px solid var(--line);
-      outline:none;background:#fff;font-size:15px
-    }
-    textarea{min-height:110px;resize:vertical}
-    .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
-    .hint{font-size:12px;color:var(--muted)}
-    .status{padding:12px 14px;border-radius:14px;border:1px dashed var(--line);background:#fbfbfb;color:var(--muted);font-size:13px}
-    .ok{border-color:#86efac;background:#f0fdf4;color:#166534}
-    .bad{border-color:#fecaca;background:#fef2f2;color:#991b1b}
-  </style>
+<meta charset="UTF-8">
+<title>منصة أشير</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f7fa;
+padding:20px;
+}
+
+.box{
+background:white;
+padding:20px;
+border-radius:10px;
+max-width:400px;
+margin:auto;
+}
+
+input,textarea{
+width:100%;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+background:#ff6b00;
+color:white;
+border:none;
+padding:12px;
+width:100%;
+font-size:16px;
+}
+
+</style>
+
 </head>
 <body>
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo">A</div>
-      <div>
-        <h1>منصة أشير</h1>
-        <p>إرسال طلب مباشر للوحة التحكم</p>
-      </div>
-    </div>
-    <button class="btn dark" onclick="location.href='admin.html'">لوحة التحكم</button>
-  </div>
+<div class="box">
 
-  <div class="wrap">
-    <div class="card">
-      <div class="card-h">
-        <h2>نموذج الطلب</h2>
-        <p>املأ البيانات ثم اضغط إرسال. سيتم حفظ الطلب مباشرة في الـ Backend.</p>
-      </div>
+<h2>إرسال طلب</h2>
 
-      <form id="orderForm">
-        <div class="grid">
-          <div>
-            <label>الاسم</label>
-            <input id="name" required placeholder="مثال: أحمد" />
-          </div>
-          <div>
-            <label>الهاتف</label>
-            <input id="phone" required placeholder="مثال: 0666xxxxxx" inputmode="tel" />
-          </div>
-          <div>
-            <label>المدينة</label>
-            <input id="city" required placeholder="مثال: غرداية" />
-          </div>
-          <div>
-            <label>نوع الطلب</label>
-            <select id="type">
-              <option value="طلب خدمة">طلب خدمة</option>
-              <option value="طلب منتج">طلب منتج</option>
-              <option value="استفسار">استفسار</option>
-            </select>
-          </div>
-        </div>
+<input id="name" placeholder="الاسم">
+<input id="phone" placeholder="الهاتف">
+<input id="city" placeholder="المدينة">
+<textarea id="note" placeholder="ملاحظة"></textarea>
 
-        <div>
-          <label>ملاحظة</label>
-          <textarea id="note" placeholder="اكتب تفاصيل الطلب..."></textarea>
-        </div>
+<button onclick="sendOrder()">إرسال الطلب</button>
 
-        <div class="actions">
-          <button class="btn brand" type="submit">إرسال الطلب</button>
-          <div class="hint">Backend: <b id="apiText"></b></div>
-        </div>
+<p id="msg"></p>
 
-        <div id="msg" class="status">جاهز للإرسال…</div>
-      </form>
-    </div>
-  </div>
+</div>
 
 <script>
-  // ✅ عدّل هنا فقط إذا تغيّر الرابط
-  const API_BASE = "https://achir-backend.onrender.com";
-  document.getElementById("apiText").textContent = API_BASE;
 
-  function setMsg(text, type){
-    const el = document.getElementById("msg");
-    el.className = "status " + (type || "");
-    el.textContent = text;
-  }
+const API = "https://achir-backend.onrender.com/api/orders";
 
-  async function apiCreate(payload){
-    // نفترض أن الـ Backend يستقبل POST على "/" ويرجع JSON
-    const res = await fetch(`${API_BASE}/`, {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
-    });
-    const text = await res.text();
-    let data;
-    try { data = JSON.parse(text); } catch { data = text; }
-    if(!res.ok) throw new Error(typeof data === "string" ? data : (data.message || "فشل الإرسال"));
-    return data;
-  }
+function sendOrder(){
 
-  document.getElementById("orderForm").addEventListener("submit", async (e)=>{
-    e.preventDefault();
-    const name = document.getElementById("name").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const type = document.getElementById("type").value;
-    const note = document.getElementById("note").value.trim();
+fetch(API,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+name:document.getElementById("name").value,
+phone:document.getElementById("phone").value,
+city:document.getElementById("city").value,
+note:document.getElementById("note").value
+})
+})
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("msg").innerHTML="تم الإرسال بنجاح";
+});
 
-    if(!name || !phone || !city){
-      setMsg("⚠️ رجاءً املأ الاسم/الهاتف/المدينة.", "bad");
-      return;
-    }
+}
 
-    setMsg("⏳ جاري الإرسال...", "");
-    try{
-      const payload = {
-        name, phone, city,
-        note: `${type} - ${note}`.trim()
-      };
-      await apiCreate(payload);
-      setMsg("✅ تم إرسال الطلب بنجاح.", "ok");
-      e.target.reset();
-    }catch(err){
-      setMsg("❌ فشل الإرسال: " + err.message, "bad");
-    }
-  });
 </script>
+
 </body>
 </html>
