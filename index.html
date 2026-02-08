@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>إرسال طلب كراء معدات</title>
+<title>منصة أشير - طلب كراء معدات</title>
 
 <style>
 
@@ -12,6 +12,7 @@ font-family:Arial;
 background:#0b1a2e;
 color:white;
 text-align:center;
+margin:0;
 padding:20px;
 }
 
@@ -26,8 +27,8 @@ margin:auto;
 
 input,select,textarea{
 width:100%;
-padding:12px;
-margin:8px 0;
+padding:10px;
+margin:5px 0;
 border-radius:6px;
 border:1px solid #ccc;
 font-size:16px;
@@ -37,20 +38,16 @@ button{
 background:#ff6b00;
 color:white;
 border:none;
-padding:14px;
-width:100%;
-font-size:18px;
+padding:15px;
+margin-top:10px;
 border-radius:6px;
 cursor:pointer;
+font-size:18px;
+width:100%;
 }
 
-.success{
-color:green;
-font-weight:bold;
-}
-
-.error{
-color:red;
+.msg{
+margin-top:10px;
 font-weight:bold;
 }
 
@@ -59,86 +56,87 @@ font-weight:bold;
 </head>
 <body>
 
-<h2>إرسال طلب كراء معدات</h2>
+<h1>إرسال طلب كراء معدات</h1>
 
 <div class="box">
 
-<input id="name" placeholder="الاسم">
+<input id="name" placeholder="الاسم الكامل">
 
-<input id="phone" placeholder="الهاتف">
+<input id="phone" placeholder="رقم الهاتف">
 
 <input id="city" placeholder="المدينة">
 
 <select id="equipment">
-<option>جرار</option>
-<option>حفار</option>
-<option>شاحنة</option>
-<option>آلة حرث</option>
+<option value="جرار">جرار</option>
+<option value="حفار">حفار</option>
+<option value="شاحنة">شاحنة</option>
+<option value="آلة حرث">آلة حرث</option>
 </select>
 
+<label>تاريخ البداية</label>
 <input type="date" id="start">
 
+<label>تاريخ النهاية</label>
 <input type="date" id="end">
 
 <input id="address" placeholder="مكان الاستلام">
 
-<textarea id="note" placeholder="تفاصيل الطلب"></textarea>
+<textarea id="note" placeholder="تفاصيل إضافية"></textarea>
 
-<button onclick="send()">إرسال الطلب</button>
+<button onclick="sendOrder()">إرسال الطلب</button>
 
-<p id="msg"></p>
+<div class="msg" id="msg"></div>
 
 </div>
 
 <script>
 
 const API="https://achir-backend-1.onrender.com/api/orders";
-const TOKEN="achir_super_admin_2026";
 
-function send(){
+function sendOrder(){
 
-document.getElementById("msg").innerHTML="جاري الإرسال...";
+const data={
+
+name:document.getElementById("name").value,
+phone:document.getElementById("phone").value,
+city:document.getElementById("city").value,
+
+equipment:document.getElementById("equipment").value,
+start:document.getElementById("start").value,
+end:document.getElementById("end").value,
+
+address:document.getElementById("address").value,
+note:document.getElementById("note").value
+
+};
 
 fetch(API,{
 method:"POST",
 headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer "+TOKEN
+"Content-Type":"application/json"
 },
-body:JSON.stringify({
-
-name:document.getElementById("name").value,
-
-phone:document.getElementById("phone").value,
-
-city:document.getElementById("city").value,
-
-equipment:document.getElementById("equipment").value,
-
-start:document.getElementById("start").value,
-
-end:document.getElementById("end").value,
-
-address:document.getElementById("address").value,
-
-note:document.getElementById("note").value
-
-})
+body:JSON.stringify(data)
 })
 
 .then(res=>res.json())
 
-.then(data=>{
+.then(res=>{
 
-document.getElementById("msg").innerHTML=
-"<span class='success'>✅ تم إرسال الطلب بنجاح</span>";
+if(res.ok){
+
+document.getElementById("msg").innerHTML="✅ تم إرسال الطلب بنجاح";
+
+}else{
+
+document.getElementById("msg").innerHTML="❌ فشل الإرسال";
+
+}
 
 })
 
 .catch(()=>{
 
-document.getElementById("msg").innerHTML=
-"<span class='error'>❌ تعذر الاتصال بالBackend</span>";
+document.getElementById("msg").innerHTML="❌ تعذر الاتصال بالBackend";
 
 });
 
