@@ -1,279 +1,53 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html dir="rtl">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Super Admin - كراء معدات</title>
-  <style>
-    body{font-family:Arial;background:#0b1a2e;color:#fff;margin:0;padding:24px}
-    .wrap{max-width:1100px;margin:auto}
-    .card{background:#fff;color:#111;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
-    h1{margin:0 0 12px 0}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    input,select{padding:12px;border:1px solid #ddd;border-radius:12px;font-size:16px;outline:none}
-    button{border:none;border-radius:12px;padding:12px 14px;font-size:16px;cursor:pointer}
-    .btn{background:#ff6b00;color:#fff}
-    .btn2{background:#0b1a2e;color:#fff}
-    .danger{background:#c10000;color:#fff}
-    .muted{opacity:.8}
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    th{background:#0b1a2e;color:#fff;padding:10px;text-align:right}
-    td{padding:10px;border-bottom:1px solid #eee;vertical-align:top}
-    .badge{display:inline-block;padding:6px 10px;border-radius:999px;font-weight:800;font-size:12px}
-    .b-new{background:#ffe7d6;color:#8a2c00}
-    .b-contacted{background:#e5f4ff;color:#004b7a}
-    .b-done{background:#e7ffe7;color:#136b13}
-    .b-cancel{background:#ffe5e5;color:#8a0000}
-    .top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:800px){.grid2{grid-template-columns:1fr}}
-  </style>
+<meta charset="UTF-8">
+<title>إرسال طلب</title>
 </head>
+
 <body>
-<div class="wrap">
 
-  <div class="top">
-    <h1>لوحة تحكم Super Admin — كراء معدات</h1>
-    <div class="row">
-      <button class="btn2" onclick="logout()">خروج</button>
-    </div>
-  </div>
+<h2>طلب جديد</h2>
 
-  <div class="card" id="loginCard" style="display:none">
-    <h2 style="margin:0 0 10px 0">تسجيل الدخول</h2>
-    <div class="grid2">
-      <div>
-        <div class="muted" style="margin-bottom:6px">Email</div>
-        <input id="email" placeholder="admin@email.com"/>
-      </div>
-      <div>
-        <div class="muted" style="margin-bottom:6px">Password</div>
-        <input id="password" type="password" placeholder="********"/>
-      </div>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <button class="btn" onclick="login()">دخول</button>
-      <div id="loginMsg" class="muted"></div>
-    </div>
-  </div>
+<input id="name" placeholder="الاسم"><br><br>
+<input id="phone" placeholder="الهاتف"><br><br>
+<input id="city" placeholder="المدينة"><br><br>
 
-  <div class="card" id="appCard" style="display:none">
-    <div class="row" style="justify-content:space-between">
-      <div class="row">
-        <button class="btn" onclick="loadOrders()">تحديث</button>
-        <select id="filter" onchange="loadOrders()">
-          <option value="">كل الحالات</option>
-          <option value="new">جديد</option>
-          <option value="contacted">تم الاتصال</option>
-          <option value="done">مكتمل</option>
-          <option value="cancelled">ملغي</option>
-        </select>
-      </div>
-      <div class="muted" id="status">...</div>
-    </div>
+<button onclick="send()">إرسال</button>
 
-    <table>
-      <thead>
-        <tr>
-          <th>الاسم</th>
-          <th>الهاتف</th>
-          <th>المدينة</th>
-          <th>المعدة</th>
-          <th>المدة</th>
-          <th>الحالة</th>
-          <th>إجراءات</th>
-        </tr>
-      </thead>
-      <tbody id="orders"></tbody>
-    </table>
-  </div>
-
-</div>
+<p id="msg"></p>
 
 <script>
-  // ✅ ضع رابط باكندك هنا
-  const API_BASE = "https://achir-backend-1.onrender.com";
-  const LOGIN_URL = API_BASE + "/api/auth/login";
-  const ORDERS_URL = API_BASE + "/api/orders";
-  const tokenKey = "ACHIR_ADMIN_TOKEN";
 
-  function getToken(){ return localStorage.getItem(tokenKey); }
-  function setToken(t){ localStorage.setItem(tokenKey, t); }
-  function logout(){
-    localStorage.removeItem(tokenKey);
-    location.reload();
-  }
+const API="https://achir-backend-1.onrender.com/api/orders";
 
-  function badge(status){
-    if(status==="new") return `<span class="badge b-new">جديد</span>`;
-    if(status==="contacted") return `<span class="badge b-contacted">تم الاتصال</span>`;
-    if(status==="done") return `<span class="badge b-done">مكتمل</span>`;
-    if(status==="cancelled") return `<span class="badge b-cancel">ملغي</span>`;
-    return `<span class="badge b-new">جديد</span>`;
-  }
+const TOKEN="achir_super_admin_2026";
 
-  async function login(){
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    document.getElementById("loginMsg").textContent = "جاري الدخول...";
+function send(){
 
-    try{
-      const res = await fetch(LOGIN_URL,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({email,password})
-      });
-      const data = await res.json();
-      if(!res.ok){
-        document.getElementById("loginMsg").textContent = "❌ " + (data?.error || "فشل الدخول");
-        return;
-      }
-      setToken(data.token);
-      init();
-    }catch(e){
-      document.getElementById("loginMsg").textContent = "❌ تعذر الاتصال";
-    }
-  }
+fetch(API,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+TOKEN
+},
+body:JSON.stringify({
+name:document.getElementById("name").value,
+phone:document.getElementById("phone").value,
+city:document.getElementById("city").value
+})
+})
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("msg").innerHTML="تم الإرسال بنجاح";
+})
+.catch(()=>{
+document.getElementById("msg").innerHTML="خطأ";
+});
 
-  async function loadOrders(){
-    const token = getToken();
-    const filter = document.getElementById("filter").value;
-    document.getElementById("status").textContent = "جاري تحميل الطلبات...";
+}
 
-    const url = filter ? (ORDERS_URL + "?status=" + encodeURIComponent(filter)) : ORDERS_URL;
-
-    try{
-      const res = await fetch(url,{
-        headers:{ "Authorization":"Bearer " + token }
-      });
-      const data = await res.json();
-
-      if(!res.ok){
-        document.getElementById("status").textContent = "❌ خطأ: " + (data?.error || "غير معروف");
-        return;
-      }
-
-      if(!Array.isArray(data) || data.length===0){
-        document.getElementById("orders").innerHTML = `<tr><td colspan="7" style="text-align:center">لا توجد طلبات</td></tr>`;
-        document.getElementById("status").textContent = "✅ متصل — لا توجد طلبات";
-        return;
-      }
-
-      document.getElementById("orders").innerHTML = data.map(o=>{
-        const start = o.startDate ? (new Date(o.startDate).toLocaleDateString()) : "-";
-        const end = o.endDate ? (new Date(o.endDate).toLocaleDateString()) : "-";
-        const waText =
-`طلب كراء معدات ✅
-الاسم: ${o.name}
-الهاتف: ${o.phone}
-المدينة: ${o.city}
-المعدة: ${o.equipment}
-من: ${start} إلى: ${end}
-العنوان: ${o.address || "-"}
-ملاحظة: ${o.notes || "-"}`;
-        const waUrl = `https://wa.me/${o.phone.replace(/[^0-9]/g,'') || ""}?text=${encodeURIComponent("مرحبا، بخصوص طلب كراء المعدات...")}`;
-
-        return `
-          <tr>
-            <td>${o.name || ""}</td>
-            <td>${o.phone || ""}</td>
-            <td>${o.city || ""}</td>
-            <td>${o.equipment || ""}</td>
-            <td>${start} → ${end}</td>
-            <td>
-              ${badge(o.status)}
-              <div style="margin-top:8px">
-                <select onchange="updateStatus('${o._id}', this.value)">
-                  <option value="new" ${o.status==="new"?"selected":""}>جديد</option>
-                  <option value="contacted" ${o.status==="contacted"?"selected":""}>تم الاتصال</option>
-                  <option value="done" ${o.status==="done"?"selected":""}>مكتمل</option>
-                  <option value="cancelled" ${o.status==="cancelled"?"selected":""}>ملغي</option>
-                </select>
-              </div>
-            </td>
-            <td>
-              <div class="row">
-                <button class="btn2" onclick="copyText(\`${waText.replace(/`/g,"'")}\`)">نسخ نص</button>
-                <button class="btn2" onclick="openWA('${o.phone}')">واتساب</button>
-                <button class="danger" onclick="deleteOrder('${o._id}')">حذف</button>
-              </div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-      document.getElementById("status").textContent = "✅ متصل — تم تحميل " + data.length + " طلب";
-
-    }catch(e){
-      document.getElementById("status").textContent = "❌ فشل الاتصال بالـ Backend";
-    }
-  }
-
-  function openWA(phone){
-    const num = (phone||"").replace(/[^0-9]/g,'');
-    if(!num){ alert("رقم هاتف غير صالح"); return; }
-    window.open(`https://wa.me/${num}`, "_blank");
-  }
-
-  async function updateStatus(id, status){
-    const token = getToken();
-    try{
-      const res = await fetch(ORDERS_URL + "/" + id, {
-        method:"PATCH",
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":"Bearer " + token
-        },
-        body: JSON.stringify({ status })
-      });
-      const data = await res.json();
-      if(!res.ok){
-        alert("فشل تغيير الحالة: " + (data?.error || "خطأ"));
-        return;
-      }
-      loadOrders();
-    }catch(e){
-      alert("تعذر الاتصال");
-    }
-  }
-
-  async function deleteOrder(id){
-    if(!confirm("تأكيد الحذف؟")) return;
-    const token = getToken();
-    try{
-      const res = await fetch(ORDERS_URL + "/" + id, {
-        method:"DELETE",
-        headers:{ "Authorization":"Bearer " + token }
-      });
-      const data = await res.json().catch(()=>({}));
-      if(!res.ok){
-        alert("فشل الحذف: " + (data?.error || "خطأ"));
-        return;
-      }
-      loadOrders();
-    }catch(e){
-      alert("تعذر الاتصال");
-    }
-  }
-
-  async function copyText(text){
-    try{ await navigator.clipboard.writeText(text); alert("✅ تم النسخ"); }
-    catch{ prompt("انسخ النص:", text); }
-  }
-
-  function init(){
-    const token = getToken();
-    if(!token){
-      document.getElementById("loginCard").style.display = "block";
-      document.getElementById("appCard").style.display = "none";
-    }else{
-      document.getElementById("loginCard").style.display = "none";
-      document.getElementById("appCard").style.display = "block";
-      loadOrders();
-    }
-  }
-
-  init();
 </script>
+
 </body>
 </html>
