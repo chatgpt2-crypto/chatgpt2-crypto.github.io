@@ -2,20 +2,88 @@
 <html dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>إرسال طلب</title>
-</head>
+<title>لوحة تحكم Super Admin</title>
 
+<style>
+
+body{
+font-family:Arial;
+background:#0b1a2e;
+color:white;
+text-align:center;
+padding:20px;
+}
+
+.box{
+background:white;
+color:black;
+padding:20px;
+border-radius:12px;
+max-width:800px;
+margin:auto;
+}
+
+button{
+background:#ff6b00;
+color:white;
+border:none;
+padding:10px 20px;
+margin:10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.delete{
+background:red;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th{
+background:#0b1a2e;
+color:white;
+padding:10px;
+}
+
+td{
+padding:10px;
+border-bottom:1px solid #ddd;
+}
+
+</style>
+
+</head>
 <body>
 
-<h2>طلب جديد</h2>
+<h1>لوحة تحكم Super Admin</h1>
 
-<input id="name" placeholder="الاسم"><br><br>
-<input id="phone" placeholder="الهاتف"><br><br>
-<input id="city" placeholder="المدينة"><br><br>
+<div class="box">
 
-<button onclick="send()">إرسال</button>
+<button onclick="load()">تحديث</button>
 
-<p id="msg"></p>
+<div id="status">جاري الاتصال...</div>
+
+<table>
+
+<thead>
+<tr>
+<th>الاسم</th>
+<th>الهاتف</th>
+<th>المدينة</th>
+<th>المعدة</th>
+<th>حذف</th>
+</tr>
+</thead>
+
+<tbody id="data"></tbody>
+
+</table>
+
+</div>
 
 <script>
 
@@ -23,29 +91,77 @@ const API="https://achir-backend-1.onrender.com/api/orders";
 
 const TOKEN="achir_super_admin_2026";
 
-function send(){
+function load(){
 
 fetch(API,{
-method:"POST",
 headers:{
-"Content-Type":"application/json",
 "Authorization":"Bearer "+TOKEN
-},
-body:JSON.stringify({
-name:document.getElementById("name").value,
-phone:document.getElementById("phone").value,
-city:document.getElementById("city").value
+}
 })
-})
+
 .then(r=>r.json())
-.then(d=>{
-document.getElementById("msg").innerHTML="تم الإرسال بنجاح";
+
+.then(list=>{
+
+document.getElementById("status").innerHTML="✅ متصل";
+
+let html="";
+
+list.forEach(o=>{
+
+html+=`
+<tr>
+
+<td>${o.name}</td>
+
+<td>${o.phone}</td>
+
+<td>${o.city}</td>
+
+<td>${o.equipment}</td>
+
+<td>
+
+<button class="delete"
+onclick="del('${o.id}')">
+
+حذف
+
+</button>
+
+</td>
+
+</tr>
+`;
+
+});
+
+document.getElementById("data").innerHTML=html;
+
 })
+
 .catch(()=>{
-document.getElementById("msg").innerHTML="خطأ";
+
+document.getElementById("status").innerHTML="❌ فشل الاتصال";
+
 });
 
 }
+
+function del(id){
+
+fetch(API+"/"+id,{
+method:"DELETE",
+headers:{
+"Authorization":"Bearer "+TOKEN
+}
+})
+
+.then(()=>load());
+
+}
+
+load();
 
 </script>
 
