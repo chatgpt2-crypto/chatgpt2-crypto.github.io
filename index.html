@@ -1,187 +1,141 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>منصة كراء معدات - أشير</title>
-  <style>
-    body{font-family:Arial;background:#0b1a2e;color:#fff;margin:0;padding:24px}
-    .wrap{max-width:900px;margin:auto}
-    .hero{background:linear-gradient(135deg,#0b1a2e,#112e55);border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-    .card{background:#fff;color:#111;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
-    h1{margin:0 0 8px 0;font-size:26px}
-    p{margin:0 0 10px 0;opacity:.9}
-    label{display:block;margin:12px 0 6px;color:#222;font-weight:700}
-    input,select,textarea{width:100%;padding:12px;border:1px solid #d8d8d8;border-radius:12px;font-size:16px;outline:none}
-    textarea{min-height:90px;resize:vertical}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .btn{background:#ff6b00;color:#fff;border:none;border-radius:14px;padding:14px 16px;font-size:18px;cursor:pointer;width:100%}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .btn2{background:#0b1a2e;color:#fff;border:none;border-radius:14px;padding:12px 14px;cursor:pointer}
-    .ok{color:#0a8f2b;font-weight:800;margin-top:10px}
-    .err{color:#b10000;font-weight:800;margin-top:10px}
-    .note{opacity:.85;font-size:13px;margin-top:10px}
-    @media(max-width:700px){.grid{grid-template-columns:1fr}}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>منصة أشير — كراء معدات</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0b1a2e;
+color:white;
+text-align:center;
+padding:20px;
+}
+
+.box{
+background:white;
+color:black;
+padding:20px;
+border-radius:12px;
+max-width:500px;
+margin:auto;
+}
+
+input, select, textarea{
+width:100%;
+padding:10px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+background:#ff6b00;
+color:white;
+border:none;
+padding:12px;
+width:100%;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+.msg{
+margin-top:10px;
+font-weight:bold;
+}
+
+</style>
+
 </head>
 <body>
-  <div class="wrap">
 
-    <div class="hero">
-      <h1>منصة كراء معدات — أشير</h1>
-      <p>املأ بياناتك وسيتم تسجيل طلبك مباشرة. بعد الإرسال يمكنك مراسلتنا واتساب لتأكيد الطلب.</p>
-      <p class="note">Backend: <span id="backendText"></span></p>
-    </div>
+<h2>إرسال طلب كراء معدات</h2>
 
-    <div class="card">
-      <h2 style="margin:0 0 12px 0">نموذج طلب كراء معدات</h2>
+<div class="box">
 
-      <div class="grid">
-        <div>
-          <label>الاسم</label>
-          <input id="name" placeholder="مثال: محمد بن صالح" />
-        </div>
-        <div>
-          <label>الهاتف (واتساب)</label>
-          <input id="phone" placeholder="مثال: 0666xxxxxx" />
-        </div>
-      </div>
+<input id="name" placeholder="الاسم">
 
-      <div class="grid">
-        <div>
-          <label>الولاية/المدينة</label>
-          <input id="city" placeholder="مثال: Ghardaia" />
-        </div>
-        <div>
-          <label>نوع المعدّة</label>
-          <select id="equipment">
-            <option value="جرار">جرار</option>
-            <option value="حفّار">حفّار</option>
-            <option value="شاحنة">شاحنة</option>
-            <option value="رافعة">رافعة</option>
-            <option value="مولد كهرباء">مولد كهرباء</option>
-            <option value="أخرى">أخرى</option>
-          </select>
-        </div>
-      </div>
+<input id="phone" placeholder="الهاتف">
 
-      <div class="grid">
-        <div>
-          <label>تاريخ البداية</label>
-          <input id="startDate" type="date" />
-        </div>
-        <div>
-          <label>تاريخ النهاية</label>
-          <input id="endDate" type="date" />
-        </div>
-      </div>
+<input id="city" placeholder="المدينة">
 
-      <label>مكان الاستلام/العنوان</label>
-      <input id="address" placeholder="مثال: حي ... / مزرعة ..." />
+<select id="equipment">
+<option>جرار</option>
+<option>حفارة</option>
+<option>شاحنة</option>
+<option>معدات أخرى</option>
+</select>
 
-      <label>تفاصيل الطلب</label>
-      <textarea id="notes" placeholder="اكتب تفاصيل: المدة، النوع، أي شروط..."></textarea>
+<input id="start" type="date">
 
-      <div class="row" style="margin-top:14px">
-        <button class="btn" id="sendBtn" onclick="sendOrder()">إرسال الطلب</button>
-      </div>
+<input id="end" type="date">
 
-      <div id="msg"></div>
+<input id="address" placeholder="مكان الاستلام">
 
-      <div class="row" style="margin-top:10px">
-        <button class="btn2" id="waBtn" style="display:none" onclick="openWhatsApp()">تأكيد عبر واتساب</button>
-      </div>
-    </div>
+<textarea id="details" placeholder="تفاصيل الطلب"></textarea>
 
-    <div class="card" style="margin-top:16px">
-      <h3 style="margin:0 0 8px 0">لوحة الإدارة</h3>
-      <p style="margin:0">افتح لوحة التحكم:</p>
-      <div class="row" style="margin-top:10px">
-        <a class="btn2" href="./admin.html" style="text-decoration:none;display:inline-block">فتح لوحة Super Admin</a>
-      </div>
-    </div>
+<button onclick="send()">إرسال الطلب</button>
 
-  </div>
+<div class="msg" id="msg"></div>
+
+</div>
 
 <script>
-  // ✅ ضع رابط باكندك هنا
-  const API_BASE = "https://achir-backend-1.onrender.com";
-  const PUBLIC_CREATE = API_BASE + "/api/public/orders";
-  const WHATSAPP_NUMBER = "213666376417"; // رقمك بصيغة دولية بدون +
 
-  document.getElementById("backendText").textContent = API_BASE;
+const API="https://achir-backend-1.onrender.com/api/orders";
 
-  function setMsg(type, text){
-    document.getElementById("msg").innerHTML = `<div class="${type}">${text}</div>`;
-  }
+const TOKEN="achir_super_admin_2026";
 
-  function buildWhatsAppText(payload){
-    return `طلب كراء معدات ✅
-الاسم: ${payload.name}
-الهاتف: ${payload.phone}
-المدينة: ${payload.city}
-المعدة: ${payload.equipment}
-من: ${payload.startDate || "-"} إلى: ${payload.endDate || "-"}
-العنوان: ${payload.address || "-"}
-ملاحظة: ${payload.notes || "-"}`;
-  }
+function send(){
 
-  let lastPayload = null;
+fetch(API,{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"Authorization":"Bearer "+TOKEN
+},
+body:JSON.stringify({
 
-  async function sendOrder(){
-    const payload = {
-      name: document.getElementById("name").value.trim(),
-      phone: document.getElementById("phone").value.trim(),
-      city: document.getElementById("city").value.trim(),
-      equipment: document.getElementById("equipment").value,
-      startDate: document.getElementById("startDate").value,
-      endDate: document.getElementById("endDate").value,
-      address: document.getElementById("address").value.trim(),
-      notes: document.getElementById("notes").value.trim()
-    };
+name:document.getElementById("name").value,
 
-    if(!payload.name || !payload.phone || !payload.city){
-      setMsg("err","❌ املأ الاسم + الهاتف + المدينة");
-      return;
-    }
+phone:document.getElementById("phone").value,
 
-    const btn = document.getElementById("sendBtn");
-    btn.disabled = true;
-    setMsg("","... جاري الإرسال");
+city:document.getElementById("city").value,
 
-    try{
-      const res = await fetch(PUBLIC_CREATE,{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload)
-      });
+equipment:document.getElementById("equipment").value,
 
-      const data = await res.json();
+start:document.getElementById("start").value,
 
-      if(!res.ok){
-        setMsg("err", "❌ فشل الإرسال: " + (data?.error || "خطأ غير معروف"));
-        btn.disabled = false;
-        return;
-      }
+end:document.getElementById("end").value,
 
-      lastPayload = payload;
-      setMsg("ok","✅ تم الإرسال بنجاح — يمكنك الآن تأكيده عبر واتساب");
-      document.getElementById("waBtn").style.display = "inline-block";
+address:document.getElementById("address").value,
 
-    }catch(e){
-      setMsg("err","❌ تعذر الاتصال بالـ Backend");
-    }finally{
-      btn.disabled = false;
-    }
-  }
+details:document.getElementById("details").value
 
-  function openWhatsApp(){
-    if(!lastPayload) return;
-    const text = encodeURIComponent(buildWhatsAppText(lastPayload));
-    const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
-    window.open(url,"_blank");
-  }
+})
+})
+
+.then(res=>res.json())
+
+.then(data=>{
+
+document.getElementById("msg").innerHTML="✅ تم إرسال الطلب بنجاح";
+
+})
+
+.catch(err=>{
+
+document.getElementById("msg").innerHTML="❌ فشل الاتصال بالBackend";
+
+});
+
+}
+
 </script>
+
 </body>
 </html>
